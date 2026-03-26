@@ -19,10 +19,12 @@ import { useState, useEffect, useRef } from "react";
 ââââââââââââââââââââââââââââââââââââââââââ */
 
 const PRICING = [
-  { size: '3"', price: 25, label: "Mini", desc: "Desktop collectible", time: "~2hrs" },
-  { size: '5"', price: 45, label: "Standard", desc: "Shelf display piece", time: "~4hrs" },
-  { size: '8"', price: 75, label: "Large", desc: "Statement piece", time: "~7hrs" },
-  { size: '12"', price: 120, label: "XL", desc: "Premium showpiece", time: "~12hrs" },
+  { size: '3"', price: 40, label: "Mini", desc: "Solid color", time: "~2hrs", category: "solid" },
+  { size: '5"', price: 60, label: "Standard", desc: "Solid color", time: "~4hrs", category: "solid" },
+  { size: '8"', price: 80, label: "Large", desc: "Solid color", time: "~7hrs", category: "solid" },
+  { size: '12"', price: 120, label: "XL", desc: "Solid color", time: "~12hrs", category: "solid" },
+  { size: '8"', price: 200, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
+  { size: '10"', price: 250, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
 ];
 
 const COLLECTIONS = [
@@ -390,9 +392,9 @@ function Pricing({ onOrder }) {
           <p style={{
             fontFamily: "'DM Mono', monospace", fontSize: "13px",
             color: "rgba(255,255,255,0.3)", marginTop: "8px",
-          }}>Price includes 3D modeling, printing, finishing & shipping</p>
+          }}>Free shipping included on all orders</p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "16px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px" }}>
           {PRICING.map((tier, i) => {
             const pop = i === 2;
             return (
@@ -414,7 +416,7 @@ function Pricing({ onOrder }) {
                   fontFamily: "'DM Mono', monospace", fontSize: "9px", fontWeight: 700,
                   letterSpacing: "2px", padding: "4px 14px", borderRadius: "100px", textTransform: "uppercase",
                 }}>Popular</div>}
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "6px" }}>{tier.size} {tier.label}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: tier.category === "painted" ? "#F5C518" : "rgba(255,255,255,0.4)", marginBottom: "6px" }}>{tier.size} {tier.label}</div>
                 <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "42px", color: "#fff", lineHeight: 1 }}>${tier.price}</div>
                 <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", marginTop: "6px" }}>{tier.desc}</div>
                 <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(99,102,241,0.5)", marginTop: "10px" }}>Print time: {tier.time}</div>
@@ -657,7 +659,7 @@ function OrderForm() {
         </div>
 
         <button
-          onClick={() => { if (canSubmit) setSubmitted(true); }}
+          onClick={() => { if (canSubmit) { setSubmitted(true); requestAnimationFrame(() => { requestAnimationFrame(() => { document.getElementById('order')?.scrollIntoView({ behavior: 'instant', block: 'start' }); }); }); } }}
           disabled={!canSubmit}
           style={{
             width: "100%", padding: "18px",
