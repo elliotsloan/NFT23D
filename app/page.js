@@ -446,7 +446,7 @@ function OrderForm() {
     const paypalUrl = `https://paypal.me/nft23d/${size?.price}`;
     const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${size?.price}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label)}`;
     return (
-      <section id="order" style={{ padding: "100px 20px", background: "#08080c", textAlign: "center" }}>
+      <section id="order" style={{ padding: "100px 20px", background: "#08080c", textAlign: "center", minHeight: "100vh" }}>
         <div style={{
           maxWidth: "480px", margin: "0 auto", padding: "56px 32px",
           background: "rgba(99,102,241,0.04)",
