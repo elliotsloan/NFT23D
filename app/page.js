@@ -384,11 +384,11 @@ function Pricing({ onOrder }) {
           <span style={{
             fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px",
             color: "#a855f7", textTransform: "uppercase",
-          }}>Pricing</span>
+          }}></span>
           <h2 style={{
             fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-            fontSize: "clamp(28px, 4vw, 44px)", color: "#fff", marginTop: "10px",
-          }}>Simple, Transparent Pricing</h2>
+            fontSize: "clamp(36px, 5.5vw, 56px)", color: "#fff", marginTop: "10px",
+          }}>Free Shipping on All Orders</h2>
           <p style={{
             fontFamily: "'DM Mono', monospace", fontSize: "13px",
             color: "rgba(255,255,255,0.3)", marginTop: "8px",
