@@ -657,7 +657,7 @@ function OrderForm() {
         </div>
 
         <button
-          onClick={() => canSubmit && setSubmitted(true)}
+          onClick={() => { if (canSubmit) { setSubmitted(true); setTimeout(() => document.getElementById('order')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); } }}
           disabled={!canSubmit}
           style={{
             width: "100%", padding: "18px",
