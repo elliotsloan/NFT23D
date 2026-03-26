@@ -1,22 +1,22 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 
-/* ══════════════════════════════════════════
-   NFT23D.COM — Turn Any NFT Into a 3D Collectible
+/* ââââââââââââââââââââââââââââââââââââââââââ
+   NFT23D.COM â Turn Any NFT Into a 3D Collectible
    Featured Launch Collection: Bear Champ by JC Rivera
-   
+
    HOW TO ADD YOUR PHOTOS:
    1. Upload images to the public/images/ folder in your GitHub repo
    2. Replace src="/images/placeholder.jpg" with your real filenames
-   3. Commit — Vercel auto-deploys in ~60 seconds
-   
+   3. Commit â Vercel auto-deploys in ~60 seconds
+
    IMAGE NAMES USED IN THIS FILE (upload these to public/images/):
    - hero-print.jpg ............ Your best 3D print photo (main hero)
    - hero-nft.jpg .............. The original NFT image
    - hero-result.jpg ........... Close-up of finished print
    - bear-champ-collection.jpg . Bear Champ collection showcase
    - daf-collection.jpg ........ Dead As Fuck collection showcase
-   ══════════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââââââ */
 
 const PRICING = [
   { size: '3"', price: 25, label: "Mini", desc: "Desktop collectible", time: "~2hrs" },
@@ -31,14 +31,17 @@ const COLLECTIONS = [
   { name: "Your Collection", artist: "Apply below", status: "COMING SOON", accent: "#6366f1", img: null },
 ];
 
-/* ─── Image Component — shows real image if src provided, placeholder if not ─── */
+/* âââ Image Component â shows real image if src provided, placeholder if not âââ */
 function SiteImage({ src, label, width = "100%", height = "280px", style = {} }) {
   if (src) {
     return (
-      <img src={src} alt={label || ""} style={{
-        width, height, borderRadius: "12px", objectFit: "cover",
-        display: "block", ...style,
-      }} />
+      <img
+        src={src}
+        alt={label || ""}
+        style={{
+          width, height, borderRadius: "12px", objectFit: "cover", display: "block", ...style,
+        }}
+      />
     );
   }
   return (
@@ -46,39 +49,35 @@ function SiteImage({ src, label, width = "100%", height = "280px", style = {} })
       width, height, borderRadius: "12px",
       background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 100%)",
       border: "1px dashed rgba(255,255,255,0.1)",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      overflow: "hidden", position: "relative",
-      ...style,
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      overflow: "hidden", position: "relative", ...style,
     }}>
-      <div style={{ fontSize: "32px", marginBottom: "8px", opacity: 0.3 }}>🖼️</div>
+      <div style={{ fontSize: "32px", marginBottom: "8px", opacity: 0.3 }}>ð¼ï¸</div>
       <div style={{
-        fontFamily: "'DM Mono', monospace", fontSize: "10px",
-        color: "rgba(255,255,255,0.2)", letterSpacing: "1.5px",
-        textTransform: "uppercase", textAlign: "center", padding: "0 12px",
+        fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(255,255,255,0.2)",
+        letterSpacing: "1.5px", textTransform: "uppercase", textAlign: "center", padding: "0 12px",
       }}>{label}</div>
       <div style={{
         position: "absolute", bottom: "8px", right: "10px",
-        fontFamily: "'DM Mono', monospace", fontSize: "8px",
-        color: "rgba(255,255,255,0.1)", letterSpacing: "1px",
+        fontFamily: "'DM Mono', monospace", fontSize: "8px", color: "rgba(255,255,255,0.1)", letterSpacing: "1px",
       }}>UPLOAD TO /images/</div>
     </div>
   );
 }
 
-/* ─── Ambient Effects ─── */
+/* âââ Ambient Effects âââ */
 function GrainOverlay() {
   return <div style={{
-    position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999,
-    opacity: 0.03, mixBlendMode: "overlay",
+    position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999, opacity: 0.03,
+    mixBlendMode: "overlay",
     background: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
   }} />;
 }
 
 function Glow({ color, x, y, size = 300, opacity = 0.06 }) {
   return <div style={{
-    position: "absolute", left: x, top: y, width: size, height: size,
-    borderRadius: "50%", background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
+    position: "absolute", left: x, top: y, width: size, height: size, borderRadius: "50%",
+    background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
     opacity, pointerEvents: "none", filter: "blur(30px)",
   }} />;
 }
@@ -94,7 +93,7 @@ function GridBg() {
   }} />;
 }
 
-/* ─── Navigation ─── */
+/* âââ Navigation âââ */
 function Nav({ onOrderClick }) {
   return (
     <nav style={{
@@ -114,43 +113,42 @@ function Nav({ onOrderClick }) {
           <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: "11px", color: "#fff" }}>3D</span>
         </div>
         <span style={{
-          fontFamily: "'Outfit', sans-serif", fontWeight: 700,
-          fontSize: "16px", color: "#fff", letterSpacing: "0.5px",
+          fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px",
+          color: "#fff", letterSpacing: "0.5px",
         }}>
           NFT<span style={{ color: "#a855f7" }}>2</span>3D
         </span>
       </div>
-      <button onClick={onOrderClick} style={{
-        fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontWeight: 600,
-        padding: "8px 20px", background: "linear-gradient(135deg, #6366f1, #a855f7)",
-        color: "#fff", border: "none", borderRadius: "6px",
-        cursor: "pointer", transition: "all 0.3s ease",
-        letterSpacing: "0.5px",
-      }}
-      onMouseEnter={e => e.target.style.opacity = "0.85"}
-      onMouseLeave={e => e.target.style.opacity = "1"}
+      <button
+        onClick={onOrderClick}
+        style={{
+          fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontWeight: 600,
+          padding: "8px 20px",
+          background: "linear-gradient(135deg, #6366f1, #a855f7)",
+          color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer",
+          transition: "all 0.3s ease", letterSpacing: "0.5px",
+        }}
+        onMouseEnter={e => e.target.style.opacity = "0.85"}
+        onMouseLeave={e => e.target.style.opacity = "1"}
       >Order a Print</button>
     </nav>
   );
 }
 
-/* ─── Hero ─── */
+/* âââ Hero âââ */
 function Hero({ onOrderClick }) {
   const [v, setV] = useState(false);
   useEffect(() => { setTimeout(() => setV(true), 150); }, []);
-
   return (
     <section style={{
-      minHeight: "100vh", display: "flex", alignItems: "center",
-      justifyContent: "center", position: "relative", overflow: "hidden",
-      padding: "100px 20px 60px",
+      minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
+      position: "relative", overflow: "hidden", padding: "100px 20px 60px",
       background: "linear-gradient(160deg, #08080c 0%, #0c0818 40%, #10081a 60%, #08080c 100%)",
     }}>
       <GridBg />
       <Glow color="#6366f1" x="10%" y="20%" size={400} opacity={0.07} />
       <Glow color="#a855f7" x="65%" y="55%" size={350} opacity={0.05} />
       <Glow color="#F5C518" x="80%" y="15%" size={200} opacity={0.04} />
-
       <div style={{
         maxWidth: "1100px", width: "100%", margin: "0 auto",
         display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px",
@@ -167,16 +165,12 @@ function Hero({ onOrderClick }) {
             background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)",
             marginBottom: "24px",
           }}>
-            <div style={{
-              width: "6px", height: "6px", borderRadius: "50%",
-              background: "#22c55e", boxShadow: "0 0 8px #22c55e",
-            }} />
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px #22c55e" }} />
             <span style={{
-              fontFamily: "'DM Mono', monospace", fontSize: "11px",
-              color: "#a5b4fc", letterSpacing: "1px", textTransform: "uppercase",
+              fontFamily: "'DM!Mono', monospace", fontSize: "11px", color: "#a5b4fc",
+              letterSpacing: "1px", textTransform: "uppercase",
             }}>Now accepting orders</span>
           </div>
-
           <h1 style={{
             fontFamily: "'Outfit', sans-serif", fontWeight: 800,
             fontSize: "clamp(36px, 5.5vw, 64px)", lineHeight: 1.05,
@@ -188,55 +182,47 @@ function Hero({ onOrderClick }) {
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
             }}>3D printed collectible</span>
           </h1>
-
           <p style={{
             fontFamily: "'DM Mono', monospace", fontSize: "clamp(13px, 1.5vw, 15px)",
-            color: "rgba(255,255,255,0.4)", lineHeight: 1.8,
-            maxWidth: "440px", margin: "0 0 36px",
+            color: "rgba(255,255,255,0.4)", lineHeight: 1.8, maxWidth: "440px", margin: "0 0 36px",
           }}>
-            Upload your NFT from any collection. We convert it to a 3D model,
-            print it on pro-grade Bambu Lab printers, and ship it to your door.
+            Upload your NFT from any collection. We convert it to a 3D model, print it on
+            pro-grade Bambu Lab printers, and ship it to your door.
           </p>
-
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <button onClick={onOrderClick} style={{
-              fontFamily: "'Outfit', sans-serif", fontSize: "15px", fontWeight: 600,
-              padding: "16px 36px",
-              background: "linear-gradient(135deg, #6366f1, #a855f7)",
-              color: "#fff", border: "none", borderRadius: "8px",
-              cursor: "pointer", transition: "all 0.3s ease",
-              boxShadow: "0 4px 24px rgba(99,102,241,0.3)",
-            }}
-            onMouseEnter={e => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 8px 32px rgba(99,102,241,0.4)"; }}
-            onMouseLeave={e => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = "0 4px 24px rgba(99,102,241,0.3)"; }}
+            <button
+              onClick={onOrderClick}
+              style={{
+                fontFamily: "'Outfit', sans-serif", fontSize: "15px", fontWeight: 600,
+                padding: "16px 36px",
+                background: "linear-gradient(135deg, #6366f1, #a855f7)",
+                color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer",
+                transition: "all 0.3s ease", boxShadow: "0 4px 24px rgba(99,102,241,0.3)",
+              }}
+              onMouseEnter={e => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 8px 32px rgba(99,102,241,0.4)"; }}
+              onMouseLeave={e => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = "0 4px 24px rgba(99,102,241,0.3)"; }}
             >Start Your Order</button>
-            <button onClick={() => document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })} style={{
-              fontFamily: "'Outfit', sans-serif", fontSize: "15px", fontWeight: 500,
-              padding: "16px 28px",
-              background: "rgba(255,255,255,0.04)",
-              color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: "8px", cursor: "pointer", transition: "all 0.3s ease",
-            }}
-            onMouseEnter={e => e.target.style.borderColor = "rgba(255,255,255,0.2)"}
-            onMouseLeave={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
+            <button
+              onClick={() => document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })}
+              style={{
+                fontFamily: "'Outfit', sans-serif", fontSize: "15px", fontWeight: 500,
+                padding: "16px 28px",
+                background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.6)",
+                border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px",
+                cursor: "pointer", transition: "all 0.3s ease",
+              }}
+              onMouseEnter={e => e.target.style.borderColor = "rgba(255,255,255,0.2)"}
+              onMouseLeave={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
             >How It Works</button>
           </div>
-
-          <div style={{
-            display: "flex", gap: "36px", marginTop: "48px",
-          }}>
+          <div style={{ display: "flex", gap: "36px", marginTop: "48px" }}>
             {[
               { val: "Any NFT", label: "Collection" },
               { val: "48hr", label: "Print Time" },
               { val: "$25+", label: "Starting At" },
             ].map((s, i) => (
-              <div key={i} style={{
-                opacity: v ? 1 : 0, transition: `all 0.7s ${0.5 + i * 0.12}s ease`,
-              }}>
-                <div style={{
-                  fontFamily: "'Outfit', sans-serif", fontWeight: 700,
-                  fontSize: "20px", color: "#fff",
-                }}>{s.val}</div>
+              <div key={i} style={{ opacity: v ? 1 : 0, transition: `all 0.7s ${0.5 + i * 0.12}s ease` }}>
+                <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "20px", color: "#fff" }}>{s.val}</div>
                 <div style={{
                   fontFamily: "'DM Mono', monospace", fontSize: "10px",
                   color: "rgba(255,255,255,0.25)", letterSpacing: "1.5px",
@@ -246,14 +232,14 @@ function Hero({ onOrderClick }) {
             ))}
           </div>
         </div>
-
         {/* Right: Image showcase */}
         <div style={{
-          opacity: v ? 1 : 0, transform: v ? "translateY(0) rotate(0deg)" : "translateY(30px) rotate(2deg)",
+          opacity: v ? 1 : 0,
+          transform: v ? "translateY(0) rotate(0deg)" : "translateY(30px) rotate(2deg)",
           transition: "all 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.2s",
           display: "flex", flexDirection: "column", gap: "16px",
         }}>
-          <SiteImage src="/images/hero-print.jpg" label="Hero — Photo of your 3D printed Bear Champ NFT" height="320px" />
+          <SiteImage src="/images/hero-print.jpg" label="Hero â Photo of your 3D printed Bear Champ NFT" height="320px" />
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <SiteImage src="/images/hero-nft.jpg" label="Bear Champ NFT (original)" height="150px" />
             <SiteImage src="/images/hero-result.jpg" label="3D Print result" height="150px" />
@@ -264,7 +250,7 @@ function Hero({ onOrderClick }) {
   );
 }
 
-/* ─── Featured Collections ─── */
+/* âââ Featured Collections âââ */
 function FeaturedCollections() {
   return (
     <section style={{
@@ -273,12 +259,11 @@ function FeaturedCollections() {
     }}>
       <Glow color="#F5C518" x="5%" y="30%" size={300} opacity={0.04} />
       <Glow color="#E53E3E" x="70%" y="60%" size={250} opacity={0.03} />
-
       <div style={{ maxWidth: "1000px", margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: "56px" }}>
           <span style={{
-            fontFamily: "'DM Mono', monospace", fontSize: "11px",
-            letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase",
+            fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px",
+            color: "#a855f7", textTransform: "uppercase",
           }}>Launch Collections</span>
           <h2 style={{
             fontFamily: "'Outfit', sans-serif", fontWeight: 800,
@@ -286,31 +271,23 @@ function FeaturedCollections() {
           }}>Featured Collections</h2>
           <p style={{
             fontFamily: "'DM Mono', monospace", fontSize: "13px",
-            color: "rgba(255,255,255,0.3)", marginTop: "8px", maxWidth: "500px",
-            margin: "8px auto 0",
+            color: "rgba(255,255,255,0.3)", marginTop: "8px",
+            maxWidth: "500px", margin: "8px auto 0",
           }}>
             Launching with JC Rivera's Bear Champ universe. More collections coming soon.
           </p>
         </div>
-
-        <div style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px",
-        }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
           {COLLECTIONS.map((col, i) => (
-            <div key={i} style={{
-              background: "rgba(255,255,255,0.02)",
-              border: `1px solid ${col.status === "LIVE" ? `${col.accent}22` : "rgba(255,255,255,0.04)"}`,
-              borderRadius: "16px", overflow: "hidden",
-              transition: "all 0.4s ease",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.borderColor = `${col.accent}44`;
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.borderColor = col.status === "LIVE" ? `${col.accent}22` : "rgba(255,255,255,0.04)";
-            }}
+            <div
+              key={i}
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: `1px solid ${col.status === "LIVE" ? `${col.accent}22` : "rgba(255,255,255,0.04)"}`,
+                borderRadius: "16px", overflow: "hidden", transition: "all 0.4s ease",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.borderColor = `${col.accent}44`; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = col.status === "LIVE" ? `${col.accent}22` : "rgba(255,255,255,0.04)"; }}
             >
               <SiteImage
                 src={col.img}
@@ -320,22 +297,16 @@ function FeaturedCollections() {
               />
               <div style={{ padding: "20px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                  <h3 style={{
-                    fontFamily: "'Outfit', sans-serif", fontWeight: 700,
-                    fontSize: "18px", color: "#fff", margin: 0,
-                  }}>{col.name}</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "18px", color: "#fff", margin: 0 }}>{col.name}</h3>
                   <span style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: "9px",
-                    letterSpacing: "1.5px", padding: "3px 10px", borderRadius: "100px",
+                    fontFamily: "'DM Mono', monospace", fontSize: "9px", letterSpacing: "1.5px",
+                    padding: "3px 10px", borderRadius: "100px",
                     background: col.status === "LIVE" ? `${col.accent}18` : "rgba(255,255,255,0.04)",
                     color: col.status === "LIVE" ? col.accent : "rgba(255,255,255,0.25)",
                     border: `1px solid ${col.status === "LIVE" ? `${col.accent}33` : "rgba(255,255,255,0.06)"}`,
                   }}>{col.status}</span>
                 </div>
-                <div style={{
-                  fontFamily: "'DM Mono', monospace", fontSize: "12px",
-                  color: "rgba(255,255,255,0.35)",
-                }}>by {col.artist}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>by {col.artist}</div>
               </div>
             </div>
           ))}
@@ -345,15 +316,14 @@ function FeaturedCollections() {
   );
 }
 
-/* ─── How It Works ─── */
+/* âââ How It Works âââ */
 function HowItWorks() {
   const steps = [
-    { num: "01", title: "Upload Your NFT", desc: "Drop your NFT image from any collection on any blockchain. We handle the rest.", icon: "📤" },
-    { num: "02", title: "We Build the 3D Model", desc: "Our team converts your 2D NFT into a detailed, printable 3D model using AI + manual refinement.", icon: "🧊" },
-    { num: "03", title: "Choose Your Specs", desc: "Pick your size, color finish, and any custom requests. We'll match your NFT's colors to real filament.", icon: "🎨" },
-    { num: "04", title: "Print, Finish & Ship", desc: "Printed on Bambu Lab pro printers, hand-finished, and shipped to your door.", icon: "📦" },
+    { num: "01", title: "Upload Your NFT", desc: "Drop your NFT image from any collection on any blockchain. We handle the rest.", icon: "ð¤" },
+    { num: "02", title: "We Build the 3D Model", desc: "Our team converts your 2D NFT into a detailed, printable 3D model using AI + manual refinement.", icon: "ð§" },
+    { num: "03", title: "Choose Your Specs", desc: "Pick your size, color finish, and any custom requests. We'll match your NFT's colors to real filament.", icon: "ð¨" },
+    { num: "04", title: "Print, Finish & Ship", desc: "Printed on Bambu Lab pro printers, hand-finished, and shipped to your door.", icon: "ð¦" },
   ];
-
   return (
     <section id="how" style={{
       padding: "100px 20px", position: "relative", overflow: "hidden",
@@ -363,49 +333,34 @@ function HowItWorks() {
       <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: "64px" }}>
           <span style={{
-            fontFamily: "'DM Mono', monospace", fontSize: "11px",
-            letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase",
+            fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px",
+            color: "#a855f7", textTransform: "uppercase",
           }}>The Process</span>
           <h2 style={{
             fontFamily: "'Outfit', sans-serif", fontWeight: 800,
             fontSize: "clamp(28px, 4vw, 44px)", color: "#fff", marginTop: "10px",
           }}>How It Works</h2>
         </div>
-
-        <div style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px",
-        }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
           {steps.map((step, i) => (
-            <div key={i} style={{
-              background: "rgba(255,255,255,0.015)",
-              border: "1px solid rgba(255,255,255,0.04)",
-              borderRadius: "14px", padding: "32px 24px",
-              transition: "all 0.4s ease", position: "relative", overflow: "hidden",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = "rgba(99,102,241,0.25)";
-              e.currentTarget.style.background = "rgba(99,102,241,0.03)";
-              e.currentTarget.style.transform = "translateY(-4px)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)";
-              e.currentTarget.style.background = "rgba(255,255,255,0.015)";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}>
+            <div
+              key={i}
+              style={{
+                background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)",
+                borderRadius: "14px", padding: "32px 24px", transition: "all 0.4s ease",
+                position: "relative", overflow: "hidden",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(99,102,241,0.25)"; e.currentTarget.style.background = "rgba(99,102,241,0.03)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)"; e.currentTarget.style.background = "rgba(255,255,255,0.015)"; e.currentTarget.style.transform = "translateY(0)"; }}
+            >
               <div style={{
                 position: "absolute", top: "-15px", right: "-5px",
-                fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-                fontSize: "80px", color: "rgba(99,102,241,0.04)", lineHeight: 1,
+                fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "80px",
+                color: "rgba(99,102,241,0.04)", lineHeight: 1,
               }}>{step.num}</div>
               <div style={{ fontSize: "28px", marginBottom: "14px" }}>{step.icon}</div>
-              <h3 style={{
-                fontFamily: "'Outfit', sans-serif", fontWeight: 700,
-                fontSize: "16px", color: "#fff", margin: "0 0 8px",
-              }}>{step.title}</h3>
-              <p style={{
-                fontFamily: "'DM Mono', monospace", fontSize: "12px",
-                color: "rgba(255,255,255,0.35)", lineHeight: 1.7, margin: 0,
-              }}>{step.desc}</p>
+              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px", color: "#fff", margin: "0 0 8px" }}>{step.title}</h3>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.35)", lineHeight: 1.7, margin: 0 }}>{step.desc}</p>
             </div>
           ))}
         </div>
@@ -414,7 +369,7 @@ function HowItWorks() {
   );
 }
 
-/* ─── Pricing ─── */
+/* âââ Pricing âââ */
 function Pricing({ onOrder }) {
   return (
     <section style={{
@@ -422,12 +377,11 @@ function Pricing({ onOrder }) {
       background: "linear-gradient(180deg, #08080c, #0a0614, #08080c)",
     }}>
       <Glow color="#6366f1" x="50%" y="40%" size={500} opacity={0.04} />
-
       <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: "56px" }}>
           <span style={{
-            fontFamily: "'DM Mono', monospace", fontSize: "11px",
-            letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase",
+            fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px",
+            color: "#a855f7", textTransform: "uppercase",
           }}>Pricing</span>
           <h2 style={{
             fontFamily: "'Outfit', sans-serif", fontWeight: 800,
@@ -438,91 +392,117 @@ function Pricing({ onOrder }) {
             color: "rgba(255,255,255,0.3)", marginTop: "8px",
           }}>Price includes 3D modeling, printing, finishing & shipping</p>
         </div>
-
-        <div style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "16px",
-        }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "16px" }}>
           {PRICING.map((tier, i) => {
             const pop = i === 2;
             return (
-              <div key={i} onClick={onOrder} style={{
-                background: pop ? "rgba(99,102,241,0.06)" : "rgba(255,255,255,0.015)",
-                border: pop ? "2px solid rgba(99,102,241,0.35)" : "1px solid rgba(255,255,255,0.04)",
-                borderRadius: "14px", padding: "32px 20px", textAlign: "center",
-                cursor: "pointer", transition: "all 0.3s ease", position: "relative",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 16px 48px rgba(99,102,241,0.12)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+              <div
+                key={i}
+                onClick={onOrder}
+                style={{
+                  background: pop ? "rgba(99,102,241,0.06)" : "rgba(255,255,255,0.015)",
+                  border: pop ? "2px solid rgba(99,102,241,0.35)" : "1px solid rgba(255,255,255,0.04)",
+                  borderRadius: "14px", padding: "32px 20px", textAlign: "center",
+                  cursor: "pointer", transition: "all 0.3s ease", position: "relative",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 16px 48px rgba(99,102,241,0.12)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
               >
                 {pop && <div style={{
                   position: "absolute", top: "-11px", left: "50%", transform: "translateX(-50%)",
-                  background: "linear-gradient(135deg, #6366f1, #a855f7)",
-                  color: "#fff", fontFamily: "'DM Mono', monospace",
-                  fontSize: "9px", fontWeight: 700, letterSpacing: "2px",
-                  padding: "4px 14px", borderRadius: "100px", textTransform: "uppercase",
+                  background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff",
+                  fontFamily: "'DM Mono', monospace", fontSize: "9px", fontWeight: 700,
+                  letterSpacing: "2px", padding: "4px 14px", borderRadius: "100px", textTransform: "uppercase",
                 }}>Popular</div>}
-                <div style={{
-                  fontFamily: "'DM Mono', monospace", fontSize: "12px",
-                  color: "rgba(255,255,255,0.4)", marginBottom: "6px",
-                }}>{tier.size} {tier.label}</div>
-                <div style={{
-                  fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-                  fontSize: "42px", color: "#fff", lineHeight: 1,
-                }}>${tier.price}</div>
-                <div style={{
-                  fontFamily: "'DM Mono', monospace", fontSize: "11px",
-                  color: "rgba(255,255,255,0.2)", marginTop: "6px",
-                }}>{tier.desc}</div>
-                <div style={{
-                  fontFamily: "'DM Mono', monospace", fontSize: "10px",
-                  color: "rgba(99,102,241,0.5)", marginTop: "10px",
-                }}>Print time: {tier.time}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "6px" }}>{tier.size} {tier.label}</div>
+                <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "42px", color: "#fff", lineHeight: 1 }}>${tier.price}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", marginTop: "6px" }}>{tier.desc}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(99,102,241,0.5)", marginTop: "10px" }}>Print time: {tier.time}</div>
               </div>
             );
           })}
         </div>
-
         <div style={{
           textAlign: "center", marginTop: "32px",
-          fontFamily: "'DM Mono', monospace", fontSize: "12px",
-          color: "rgba(255,255,255,0.2)",
+          fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.2)",
         }}>
-          Custom sizes and bulk orders available — reach out for a quote
+          Custom sizes and bulk orders available â reach out for a quote
         </div>
       </div>
     </section>
   );
 }
 
-/* ─── Order Form ─── */
+/* âââ Order Form âââ */
 function OrderForm() {
   const [size, setSize] = useState(null);
   const [fileName, setFileName] = useState("");
   const [form, setForm] = useState({ name: "", email: "", collection: "", wallet: "", notes: "" });
   const [submitted, setSubmitted] = useState(false);
   const fileRef = useRef(null);
-
   const canSubmit = form.name && form.email && size;
 
   if (submitted) {
+    const paypalUrl = `https://paypal.me/elliotsloan/${size?.price}`;
+    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${size?.price}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label)}`;
     return (
       <section id="order" style={{ padding: "100px 20px", background: "#08080c", textAlign: "center" }}>
         <div style={{
           maxWidth: "480px", margin: "0 auto", padding: "56px 32px",
-          background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)",
+          background: "rgba(99,102,241,0.04)",
+          border: "1px solid rgba(99,102,241,0.15)",
           borderRadius: "20px",
         }}>
-          <div style={{ fontSize: "48px", marginBottom: "16px" }}>✅</div>
+          <div style={{ fontSize: "48px", marginBottom: "16px" }}>â</div>
           <h3 style={{
-            fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-            fontSize: "28px", color: "#fff", marginBottom: "12px",
+            fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px",
+            color: "#fff", marginBottom: "12px",
           }}>Order Received!</h3>
           <p style={{
             fontFamily: "'DM Mono', monospace", fontSize: "13px",
-            color: "rgba(255,255,255,0.4)", lineHeight: 1.8,
+            color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: "28px",
           }}>
-            We'll review your NFT, build the 3D model, and send a payment link
-            via email within 24-48 hours. Thanks for being early!
+            Complete your payment below to lock in your {size?.size} {size?.label} print. We'll start on your 3D model right away!
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
+            <a
+              href={paypalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "block", padding: "16px 24px",
+                background: "#0070ba",
+                color: "#fff", borderRadius: "10px", textDecoration: "none",
+                fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px",
+                transition: "opacity 0.2s ease",
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+              onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+            >
+              ð³ Pay ${size?.price} with PayPal
+            </a>
+            <a
+              href={venmoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "block", padding: "16px 24px",
+                background: "#3D95CE",
+                color: "#fff", borderRadius: "10px", textDecoration: "none",
+                fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px",
+                transition: "opacity 0.2s ease",
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+              onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+            >
+              ð¸ Pay ${size?.price} with Venmo
+            </a>
+          </div>
+          <p style={{
+            fontFamily: "'DM Mono', monospace", fontSize: "11px",
+            color: "rgba(255,255,255,0.2)", lineHeight: 1.8,
+          }}>
+            After payment, you'll get an email confirmation and a 48hr print update.
           </p>
         </div>
       </section>
@@ -530,15 +510,13 @@ function OrderForm() {
   }
 
   const labelStyle = {
-    fontFamily: "'DM Mono', monospace", fontSize: "10px",
-    letterSpacing: "2px", color: "rgba(255,255,255,0.3)",
-    textTransform: "uppercase", display: "block", marginBottom: "8px",
+    fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "2px",
+    color: "rgba(255,255,255,0.3)", textTransform: "uppercase", display: "block", marginBottom: "8px",
   };
   const inputStyle = {
     width: "100%", padding: "13px 16px",
     background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
-    borderRadius: "8px", color: "#fff",
-    fontFamily: "'DM Mono', monospace", fontSize: "13px",
+    borderRadius: "8px", color: "#fff", fontFamily: "'DM!Mono', monospace", fontSize: "13px",
     outline: "none", transition: "border 0.2s ease", boxSizing: "border-box",
   };
 
@@ -548,12 +526,11 @@ function OrderForm() {
       background: "linear-gradient(180deg, #08080c, #0a0610, #08080c)",
     }}>
       <Glow color="#a855f7" x="80%" y="15%" size={300} opacity={0.04} />
-
       <div style={{ maxWidth: "580px", margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: "48px" }}>
           <span style={{
-            fontFamily: "'DM Mono', monospace", fontSize: "11px",
-            letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase",
+            fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px",
+            color: "#a855f7", textTransform: "uppercase",
           }}>Order Form</span>
           <h2 style={{
             fontFamily: "'Outfit', sans-serif", fontWeight: 800,
@@ -564,29 +541,35 @@ function OrderForm() {
         {/* Upload */}
         <div style={{ marginBottom: "28px" }}>
           <label style={labelStyle}>Upload Your NFT Image</label>
-          <div onClick={() => fileRef.current?.click()} style={{
-            border: `2px dashed ${fileName ? "rgba(99,102,241,0.4)" : "rgba(255,255,255,0.08)"}`,
-            borderRadius: "12px", padding: "40px 20px", textAlign: "center",
-            cursor: "pointer", background: fileName ? "rgba(99,102,241,0.03)" : "transparent",
-            transition: "all 0.3s ease",
-          }}
-          onMouseEnter={e => { if (!fileName) e.currentTarget.style.borderColor = "rgba(99,102,241,0.3)"; }}
-          onMouseLeave={e => { if (!fileName) e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+          <div
+            onClick={() => fileRef.current?.click()}
+            style={{
+              border: `2px dashed ${fileName ? "rgba(99,102,241,0.4)" : "rgba(255,255,255,0.08)"}`,
+              borderRadius: "12px", padding: "40px 20px", textAlign: "center",
+              cursor: "pointer", background: fileName ? "rgba(99,102,241,0.03)" : "transparent",
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={e => { if (!fileName) e.currentTarget.style.borderColor = "rgba(99,102,241,0.3)"; }}
+            onMouseLeave={e => { if (!fileName) e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
           >
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
-              onChange={e => setFileName(e.target.files?.[0]?.name || "")} />
-            <div style={{ fontSize: "28px", marginBottom: "8px" }}>{fileName ? "✅" : "🖼️"}</div>
+            <input
+              ref={fileRef} type="file" accept="image/*"
+              style={{ display: "none" }}
+              onChange={e => setFileName(e.target.files?.[0]?.name || "")}
+            />
+            <div style={{ fontSize: "28px", marginBottom: "8px" }}>{fileName ? "â" : "ð¼ï¸"}</div>
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: "12px",
               color: fileName ? "#a5b4fc" : "rgba(255,255,255,0.25)",
-            }}>{fileName || "Click to upload — PNG, JPG, SVG"}</div>
+            }}>{fileName || "Click to upload â PNG, JPG, SVG"}</div>
           </div>
         </div>
 
         {/* Collection */}
         <div style={{ marginBottom: "28px" }}>
           <label style={labelStyle}>NFT Collection Name</label>
-          <input placeholder="e.g. Bear Champ, Bored Apes, Pudgy Penguins..."
+          <input
+            placeholder="e.g. Bear Champ, Bored Apes, Pudgy Penguins..."
             value={form.collection}
             onChange={e => setForm({ ...form, collection: e.target.value })}
             style={inputStyle}
@@ -600,16 +583,18 @@ function OrderForm() {
           <label style={labelStyle}>Select Size</label>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
             {PRICING.map((t, i) => (
-              <div key={i} onClick={() => setSize(t)} style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                padding: "13px 16px", borderRadius: "10px", cursor: "pointer",
-                background: size?.size === t.size ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.015)",
-                border: size?.size === t.size ? "2px solid #6366f1" : "1px solid rgba(255,255,255,0.05)",
-                transition: "all 0.2s ease",
-              }}>
-                <span style={{
-                  fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#fff",
-                }}>{t.size} {t.label}</span>
+              <div
+                key={i}
+                onClick={() => setSize(t)}
+                style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "13px 16px", borderRadius: "10px", cursor: "pointer",
+                  background: size?.size === t.size ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.015)",
+                  border: size?.size === t.size ? "2px solid #6366f1" : "1px solid rgba(255,255,255,0.05)",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#fff" }}>{t.size} {t.label}</span>
                 <span style={{
                   fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "18px",
                   color: size?.size === t.size ? "#a5b4fc" : "rgba(255,255,255,0.4)",
@@ -627,7 +612,9 @@ function OrderForm() {
         ].map(f => (
           <div key={f.key} style={{ marginBottom: "20px" }}>
             <label style={labelStyle}>{f.label}</label>
-            <input type={f.key === "email" ? "email" : "text"} placeholder={f.ph}
+            <input
+              type={f.key === "email" ? "email" : "text"}
+              placeholder={f.ph}
               value={form[f.key]}
               onChange={e => setForm({ ...form, [f.key]: e.target.value })}
               style={inputStyle}
@@ -639,8 +626,10 @@ function OrderForm() {
 
         <div style={{ marginBottom: "28px" }}>
           <label style={labelStyle}>Special Requests (optional)</label>
-          <textarea placeholder="Custom colors, specific finish, base engraving, etc."
-            value={form.notes} rows={3}
+          <textarea
+            placeholder="Custom colors, specific finish, base engraving, etc."
+            value={form.notes}
+            rows={3}
             onChange={e => setForm({ ...form, notes: e.target.value })}
             style={{ ...inputStyle, resize: "vertical" }}
             onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
@@ -648,47 +637,47 @@ function OrderForm() {
           />
         </div>
 
-        {/* Payment */}
+        {/* Payment info */}
         <div style={{
           background: "rgba(99,102,241,0.03)", border: "1px solid rgba(99,102,241,0.1)",
           borderRadius: "12px", padding: "18px 22px", marginBottom: "28px",
         }}>
           <div style={{
-            fontFamily: "'Outfit', sans-serif", fontWeight: 700,
-            fontSize: "13px", color: "#a5b4fc", marginBottom: "6px",
+            fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "13px",
+            color: "#a5b4fc", marginBottom: "6px",
           }}>Payment Methods</div>
           <div style={{
             fontFamily: "'DM Mono', monospace", fontSize: "12px",
             color: "rgba(255,255,255,0.35)", lineHeight: 1.7,
           }}>
-            <span style={{ color: "#fff" }}>PayPal</span> ·{" "}
-            <span style={{ color: "#fff" }}>Venmo</span> ·{" "}
-            <span style={{ color: "#fff" }}>Stripe</span> (credit/debit) —
-            Payment link sent after order confirmation.
+            <span style={{ color: "#fff" }}>PayPal</span>{" Â· "}
+            <span style={{ color: "#fff" }}>Venmo</span>
+            {" â Payment link shown instantly after you submit."}
           </div>
         </div>
 
-        <button onClick={() => canSubmit && setSubmitted(true)}
+        <button
+          onClick={() => canSubmit && setSubmitted(true)}
           disabled={!canSubmit}
           style={{
             width: "100%", padding: "18px",
-            fontFamily: "'Outfit', sans-serif", fontWeight: 700,
-            fontSize: "16px", letterSpacing: "0.5px",
+            fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px", letterSpacing: "0.5px",
             background: canSubmit ? "linear-gradient(135deg, #6366f1, #a855f7)" : "rgba(255,255,255,0.03)",
             color: canSubmit ? "#fff" : "rgba(255,255,255,0.12)",
             border: "none", borderRadius: "10px",
             cursor: canSubmit ? "pointer" : "not-allowed",
             transition: "all 0.3s ease",
             boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none",
-          }}>
-          {size ? `Submit Order — $${size.price}` : "Select a size to continue"}
+          }}
+        >
+          {size ? `Submit Order â $${size.price}` : "Select a size to continue"}
         </button>
       </div>
     </section>
   );
 }
 
-/* ─── Collection Owners CTA ─── */
+/* âââ Collection Owners CTA âââ */
 function CollectionCTA() {
   return (
     <section style={{
@@ -700,10 +689,10 @@ function CollectionCTA() {
         background: "rgba(99,102,241,0.03)", border: "1px solid rgba(99,102,241,0.1)",
         borderRadius: "20px", padding: "56px 32px",
       }}>
-        <div style={{ fontSize: "32px", marginBottom: "12px" }}>🤝</div>
+        <div style={{ fontSize: "32px", marginBottom: "12px" }}>ð¤</div>
         <h3 style={{
-          fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-          fontSize: "26px", color: "#fff", marginBottom: "12px",
+          fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "26px",
+          color: "#fff", marginBottom: "12px",
         }}>Run an NFT Project?</h3>
         <p style={{
           fontFamily: "'DM Mono', monospace", fontSize: "13px",
@@ -714,26 +703,28 @@ function CollectionCTA() {
           Bulk pricing, custom finishes, and white-label options available.
           Add real-world utility to your collection.
         </p>
-        <a href="mailto:elliot@nft23d.com" style={{
-          display: "inline-block",
-          fontFamily: "'Outfit', sans-serif", fontWeight: 600,
-          fontSize: "14px", padding: "14px 32px",
-          background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.25)",
-          color: "#a5b4fc", borderRadius: "8px",
-          textDecoration: "none", transition: "all 0.3s ease",
-        }}>Get In Touch</a>
+        <a
+          href="mailto:elliot@nft23d.com"
+          style={{
+            display: "inline-block",
+            fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: "14px",
+            padding: "14px 32px",
+            background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.25)",
+            color: "#a5b4fc", borderRadius: "8px", textDecoration: "none",
+            transition: "all 0.3s ease",
+          }}
+        >Get In Touch</a>
       </div>
     </section>
   );
 }
 
-/* ─── Footer ─── */
+/* âââ Footer âââ */
 function Footer() {
   return (
     <footer style={{
-      padding: "40px 20px 32px",
-      background: "#06060a", borderTop: "1px solid rgba(255,255,255,0.03)",
-      textAlign: "center",
+      padding: "40px 20px 32px", background: "#06060a",
+      borderTop: "1px solid rgba(255,255,255,0.03)", textAlign: "center",
     }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "12px" }}>
         <div style={{
@@ -744,8 +735,8 @@ function Footer() {
           <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: "9px", color: "#fff", fontWeight: 700 }}>3D</span>
         </div>
         <span style={{
-          fontFamily: "'Outfit', sans-serif", fontWeight: 700,
-          fontSize: "14px", color: "rgba(255,255,255,0.3)",
+          fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px",
+          color: "rgba(255,255,255,0.3)",
         }}>NFT<span style={{ color: "rgba(168,85,247,0.5)" }}>2</span>3D</span>
       </div>
       <div style={{
@@ -753,13 +744,10 @@ function Footer() {
         color: "rgba(255,255,255,0.12)", marginBottom: "6px",
       }}>Turning digital art into physical collectibles</div>
       <div style={{
-        fontFamily: "'DM Mono', monospace", fontSize: "10px",
-        color: "rgba(255,255,255,0.08)",
+        fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(255,255,255,0.08)",
       }}>Built by @elliotsloan</div>
-      <div style={{
-        marginTop: "16px", display: "flex", gap: "16px", justifyContent: "center",
-      }}>
-        {["PayPal", "Venmo", "Stripe"].map(m => (
+      <div style={{ marginTop: "16px", display: "flex", gap: "16px", justifyContent: "center" }}>
+        {["PayPal", "Venmo"].map(m => (
           <span key={m} style={{
             fontFamily: "'DM Mono', monospace", fontSize: "9px",
             color: "rgba(255,255,255,0.1)", letterSpacing: "1.5px", textTransform: "uppercase",
@@ -770,12 +758,11 @@ function Footer() {
   );
 }
 
-/* ─── Main App ─── */
+/* âââ Main App âââ */
 export default function NFT23D() {
   const scrollToOrder = () => {
     document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
   };
-
   return (
     <div style={{ background: "#08080c", color: "#fff", minHeight: "100vh" }}>
       <style>{`
