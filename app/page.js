@@ -1,14 +1,14 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 
-/* ââââââââââââââââââââââââââââââââââââââââââ
-   NFT23D.COM â Turn Any NFT Into a 3D Collectible
+/*
+   NFT23D.COM - Turn Any NFT Into a 3D Collectible
    Featured Launch Collection: Bear Champ by JC Rivera
 
    HOW TO ADD YOUR PHOTOS:
    1. Upload images to the public/images/ folder in your GitHub repo
    2. Replace src="/images/placeholder.jpg" with your real filenames
-   3. Commit â Vercel auto-deploys in ~60 seconds
+   3. Commit  Vercel auto-deploys in ~60 seconds
 
    IMAGE NAMES USED IN THIS FILE (upload these to public/images/):
    - hero-print.jpg ............ Your best 3D print photo (main hero)
@@ -16,7 +16,7 @@ import { useState, useEffect, useRef } from "react";
    - hero-result.jpg ........... Close-up of finished print
    - bear-champ-collection.jpg . Bear Champ collection showcase
    - daf-collection.jpg ........ Dead As Fuck collection showcase
-ââââââââââââââââââââââââââââââââââââââââââ */
+*/
 
 const PRICING = [
   { size: '3"', price: 40, label: "Mini", desc: "Solid color", time: "~2hrs", category: "solid" },
@@ -33,7 +33,7 @@ const COLLECTIONS = [
   { name: "Your Collection", artist: "Apply below", status: "COMING SOON", accent: "#6366f1", img: null },
 ];
 
-/* âââ Image Component â shows real image if src provided, placeholder if not âââ */
+/*  Image Component  shows real image if src provided, placeholder if not  */
 function SiteImage({ src, label, width = "100%", height = "280px", style = {} }) {
   if (src) {
     return (
@@ -54,7 +54,7 @@ function SiteImage({ src, label, width = "100%", height = "280px", style = {} })
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       overflow: "hidden", position: "relative", ...style,
     }}>
-      <div style={{ fontSize: "32px", marginBottom: "8px", opacity: 0.3 }}>ð¼ï¸</div>
+      <div style={{ marginBottom: "8px" }}><PictureFrameIcon size={32} opacity={0.3} /></div>
       <div style={{
         fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(255,255,255,0.2)",
         letterSpacing: "1.5px", textTransform: "uppercase", textAlign: "center", padding: "0 12px",
@@ -67,7 +67,26 @@ function SiteImage({ src, label, width = "100%", height = "280px", style = {} })
   );
 }
 
-/* âââ Ambient Effects âââ */
+/*  Ambient Effects  */
+function PictureFrameIcon({ size = 32, opacity = 0.3 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity, color: "#fff" }}>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M3 16l5-5 4 4 4-4 5 5" />
+      <circle cx="15" cy="8" r="1.5" />
+    </svg>
+  );
+}
+
+function CheckIcon({ size = 48 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ margin: "0 auto" }}>
+      <circle cx="12" cy="12" r="11" fill="#22c55e" opacity="0.15" stroke="#22c55e" strokeWidth="1.5" />
+      <path d="M7 12.5l3 3 7-7" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function GrainOverlay() {
   return <div style={{
     position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999, opacity: 0.03,
@@ -95,7 +114,7 @@ function GridBg() {
   }} />;
 }
 
-/* âââ Navigation âââ */
+/*  Navigation  */
 function Nav({ onOrderClick }) {
   return (
     <nav style={{
@@ -137,7 +156,7 @@ function Nav({ onOrderClick }) {
   );
 }
 
-/* âââ Hero âââ */
+/*  Hero  */
 function Hero({ onOrderClick }) {
   const [v, setV] = useState(false);
   useEffect(() => { setTimeout(() => setV(true), 150); }, []);
@@ -169,7 +188,7 @@ function Hero({ onOrderClick }) {
           }}>
             <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px #22c55e" }} />
             <span style={{
-              fontFamily: "'DM!Mono', monospace", fontSize: "11px", color: "#a5b4fc",
+              fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#a5b4fc",
               letterSpacing: "1px", textTransform: "uppercase",
             }}>Now accepting orders</span>
           </div>
@@ -221,7 +240,7 @@ function Hero({ onOrderClick }) {
             {[
               { val: "Any NFT", label: "Collection" },
               { val: "48hr", label: "Print Time" },
-              { val: "$25+", label: "Starting At" },
+              { val: "$40+", label: "Starting At" },
             ].map((s, i) => (
               <div key={i} style={{ opacity: v ? 1 : 0, transition: `all 0.7s ${0.5 + i * 0.12}s ease` }}>
                 <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "20px", color: "#fff" }}>{s.val}</div>
@@ -241,7 +260,7 @@ function Hero({ onOrderClick }) {
           transition: "all 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.2s",
           display: "flex", flexDirection: "column", gap: "16px",
         }}>
-          <SiteImage src="/images/hero-print.jpg" label="Hero â Photo of your 3D printed Bear Champ NFT" height="320px" />
+          <SiteImage src="/images/hero-print.jpg" label="Hero  Photo of your 3D printed Bear Champ NFT" height="320px" />
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <SiteImage src="/images/hero-nft.jpg" label="Bear Champ NFT (original)" height="150px" />
             <SiteImage src="/images/hero-result.jpg" label="3D Print result" height="150px" />
@@ -252,7 +271,7 @@ function Hero({ onOrderClick }) {
   );
 }
 
-/* âââ Featured Collections âââ */
+/*  Featured Collections  */
 function FeaturedCollections() {
   return (
     <section style={{
@@ -318,13 +337,13 @@ function FeaturedCollections() {
   );
 }
 
-/* âââ How It Works âââ */
+/*  How It Works  */
 function HowItWorks() {
   const steps = [
-    { num: "01", title: "Upload Your NFT", desc: "Drop your NFT image from any collection on any blockchain. We handle the rest.", icon: "ð¤" },
-    { num: "02", title: "We Build the 3D Model", desc: "Our team converts your 2D NFT into a detailed, printable 3D model using AI + manual refinement.", icon: "ð§" },
-    { num: "03", title: "Choose Your Specs", desc: "Pick your size, color finish, and any custom requests. We'll match your NFT's colors to real filament.", icon: "ð¨" },
-    { num: "04", title: "Print, Finish & Ship", desc: "Printed on Bambu Lab pro printers, hand-finished, and shipped to your door.", icon: "ð¦" },
+    { num: "01", title: "Upload Your NFT", desc: "Drop your NFT image from any collection on any blockchain. We handle the rest." },
+    { num: "02", title: "We Build the 3D Model", desc: "Our team converts your 2D NFT into a detailed, printable 3D model using AI + manual refinement." },
+    { num: "03", title: "Choose Your Specs", desc: "Pick your size, color finish, and any custom requests. We'll match your NFT's colors to real filament." },
+    { num: "04", title: "Print, Finish & Ship", desc: "Printed on Bambu Lab pro printers, hand-finished, and shipped to your door." },
   ];
   return (
     <section id="how" style={{
@@ -371,7 +390,7 @@ function HowItWorks() {
   );
 }
 
-/* âââ Pricing âââ */
+/*  Pricing  */
 function Pricing({ onOrder }) {
   return (
     <section style={{
@@ -428,14 +447,14 @@ function Pricing({ onOrder }) {
           textAlign: "center", marginTop: "32px",
           fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.2)",
         }}>
-          Custom sizes and bulk orders available â reach out for a quote
+          Custom sizes and bulk orders available  reach out for a quote
         </div>
       </div>
     </section>
   );
 }
 
-/* âââ Order Form âââ */
+/*  Order Form  */
 function OrderForm() {
   const [size, setSize] = useState(null);
   const [fileName, setFileName] = useState("");
@@ -455,7 +474,9 @@ function OrderForm() {
           border: "1px solid rgba(99,102,241,0.15)",
           borderRadius: "20px",
         }}>
-          <div style={{ fontSize: "48px", marginBottom: "16px" }}>â</div>
+          <div style={{ marginBottom: "16px" }}>
+            <CheckIcon size={48} />
+          </div>
           <h3 style={{
             fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px",
             color: "#fff", marginBottom: "12px",
@@ -481,7 +502,7 @@ function OrderForm() {
               onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
               onMouseLeave={e => e.currentTarget.style.opacity = "1"}
             >
-              ð³ Pay ${size?.price} with PayPal
+               Pay ${size?.price} with PayPal
             </a>
             <a
               href={venmoUrl}
@@ -497,7 +518,7 @@ function OrderForm() {
               onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
               onMouseLeave={e => e.currentTarget.style.opacity = "1"}
             >
-              ð¸ Pay ${size?.price} with Venmo
+               Pay ${size?.price} with Venmo
             </a>
           </div>
           <p style={{
@@ -518,7 +539,7 @@ function OrderForm() {
   const inputStyle = {
     width: "100%", padding: "13px 16px",
     background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
-    borderRadius: "8px", color: "#fff", fontFamily: "'DM!Mono', monospace", fontSize: "13px",
+    borderRadius: "8px", color: "#fff", fontFamily: "'DM Mono', monospace", fontSize: "13px",
     outline: "none", transition: "border 0.2s ease", boxSizing: "border-box",
   };
 
@@ -559,11 +580,11 @@ function OrderForm() {
               style={{ display: "none" }}
               onChange={e => setFileName(e.target.files?.[0]?.name || "")}
             />
-            <div style={{ fontSize: "28px", marginBottom: "8px" }}>{fileName ? "â" : "ð¼ï¸"}</div>
+            <div style={{ marginBottom: "8px" }}>{fileName ? <CheckIcon size={28} /> : <PictureFrameIcon size={28} opacity={0.25} />}</div>
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: "12px",
               color: fileName ? "#a5b4fc" : "rgba(255,255,255,0.25)",
-            }}>{fileName || "Click to upload â PNG, JPG, SVG"}</div>
+            }}>{fileName || "Click to upload -- PNG, JPG, SVG"}</div>
           </div>
         </div>
 
@@ -652,9 +673,9 @@ function OrderForm() {
             fontFamily: "'DM Mono', monospace", fontSize: "12px",
             color: "rgba(255,255,255,0.35)", lineHeight: 1.7,
           }}>
-            <span style={{ color: "#fff" }}>PayPal</span>{" Â· "}
+            <span style={{ color: "#fff" }}>PayPal</span>{" | "}
             <span style={{ color: "#fff" }}>Venmo</span>
-            {" â Payment link shown instantly after you submit."}
+            {" -- Payment link shown instantly after you submit."}
           </div>
         </div>
 
@@ -672,14 +693,14 @@ function OrderForm() {
             boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none",
           }}
         >
-          {size ? `Submit Order â $${size.price}` : "Select a size to continue"}
+          {size ? `Submit Order  $${size.price}` : "Select a size to continue"}
         </button>
       </div>
     </section>
   );
 }
 
-/* âââ Collection Owners CTA âââ */
+/*  Collection Owners CTA  */
 function CollectionCTA() {
   return (
     <section style={{
@@ -691,7 +712,7 @@ function CollectionCTA() {
         background: "rgba(99,102,241,0.03)", border: "1px solid rgba(99,102,241,0.1)",
         borderRadius: "20px", padding: "56px 32px",
       }}>
-        <div style={{ fontSize: "32px", marginBottom: "12px" }}>ð¤</div>
+        
         <h3 style={{
           fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "26px",
           color: "#fff", marginBottom: "12px",
@@ -721,7 +742,7 @@ function CollectionCTA() {
   );
 }
 
-/* âââ Footer âââ */
+/*  Footer  */
 function Footer() {
   return (
     <footer style={{
@@ -760,7 +781,7 @@ function Footer() {
   );
 }
 
-/* âââ Main App âââ */
+/*  Main App  */
 export default function NFT23D() {
   const scrollToOrder = () => {
     document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
