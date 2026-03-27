@@ -104,7 +104,7 @@ function CheckIcon({ size = 48 }) {
 }
 
 function GrainOverlay() {
-  return <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999, opacity: 0.03, mixBlendMode: "overlay", background: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', }} />;
+  return <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999, opacity: 0.03, mixBlendMode: "overlay", background: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, }} />;
 }
 
 function Glow({ color, x, y, size = 300, opacity = 0.06 }) {
@@ -491,6 +491,35 @@ function OrderForm() {
     setSubmitting(false);
   };
 
+  const [stripeLoading, setStripeLoading] = useState(false);
+
+  const handleStripeCheckout = async () => {
+    setStripeLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          size: size?.size,
+          label: size?.label,
+          price: size?.price,
+          name: form.name,
+          email: form.email,
+          collection: form.collection,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Something went wrong creating checkout. Please try PayPal or Venmo.");
+      }
+    } catch (err) {
+      alert("Something went wrong. Please try PayPal or Venmo.");
+    }
+    setStripeLoading(false);
+  };
+
   if (submitted) {
     const paypalUrl = `https://paypal.me/nft23d/${size?.price}`;
     const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${size?.price}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label)}`;
@@ -503,14 +532,21 @@ function OrderForm() {
             Complete your payment below to lock in your {size?.size} {size?.label} print. We'll start on your 3D model right away!
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
-            <a href={paypalUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "16px 24px", background: "#0070ba", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px", transition: "opacity 0.2s ease", }}
+            <button onClick={handleStripeCheckout} disabled={stripeLoading} style={{ display: "block", width: "100%", padding: "16px 24px", background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff", borderRadius: "10px", border: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px", cursor: stripeLoading ? "wait" : "pointer", transition: "opacity 0.2s ease", boxShadow: "0 4px 24px rgba(99,102,241,0.3)", }}
               onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
               onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-            >Pay ${size?.price} with PayPal</a>
-            <a href={venmoUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "16px 24px", background: "#3D95CE", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px", transition: "opacity 0.2s ease", }}
-              onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-              onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-            >Pay ${size?.price} with Venmo</a>
+            >{stripeLoading ? "Redirecting to checkout..." : `Pay $${size?.price} with Card`}</button>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.15)", letterSpacing: "1px", textTransform: "uppercase", marginTop: "4px", marginBottom: "4px", }}>or pay with</div>
+            <div style={{ display: "flex", gap: "12px" }}>
+              <a href={paypalUrl} target="_blank" rel="noopener noreferrer" style={{ flex: 1, display: "block", padding: "14px 16px", background: "#0070ba", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
+                onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+              >PayPal</a>
+              <a href={venmoUrl} target="_blank" rel="noopener noreferrer" style={{ flex: 1, display: "block", padding: "14px 16px", background: "#3D95CE", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
+                onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+              >Venmo</a>
+            </div>
           </div>
           <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", lineHeight: 1.8, }}>
             After payment, you'll get an email confirmation and a 48hr print update.
@@ -588,9 +624,10 @@ function OrderForm() {
         <div style={{ background: "rgba(99,102,241,0.03)", border: "1px solid rgba(99,102,241,0.1)", borderRadius: "12px", padding: "18px 22px", marginBottom: "28px", }}>
           <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "13px", color: "#a5b4fc", marginBottom: "6px", }}>Payment Methods</div>
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.35)", lineHeight: 1.7, }}>
+            <span style={{ color: "#fff" }}>Card</span>{" | "}
             <span style={{ color: "#fff" }}>PayPal</span>{" | "}
             <span style={{ color: "#fff" }}>Venmo</span>
-            {" -- Payment link shown instantly after you submit."}
+            {" -- Payment options shown instantly after you submit."}
           </div>
         </div>
         <button onClick={handleSubmit} disabled={!canSubmit} style={{ width: "100%", padding: "18px", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px", letterSpacing: "0.5px", background: canSubmit ? "linear-gradient(135deg, #6366f1, #a855f7)" : "rgba(255,255,255,0.03)", color: canSubmit ? "#fff" : "rgba(255,255,255,0.12)", border: "none", borderRadius: "10px", cursor: canSubmit ? "pointer" : "not-allowed", transition: "all 0.3s ease", boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none", }}>
@@ -668,4 +705,4 @@ export default function NFT23D() {
       {applyModalOpen && <CollectionApplyModal onClose={() => setApplyModalOpen(false)} />}
     </div>
   );
-        }
+}
