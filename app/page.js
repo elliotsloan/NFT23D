@@ -22,7 +22,7 @@ const PRICING = [
   { size: '3"', price: 40, label: "Mini", desc: "Solid color", time: "~2hrs", category: "solid" },
   { size: '5"', price: 60, label: "Standard", desc: "Solid color", time: "~4hrs", category: "solid" },
   { size: '8"', price: 80, label: "Large", desc: "Solid color", time: "~7hrs", category: "solid" },
-  { size: '12"', price: 120, label: "XL", desc: "Solid color", time: "~12hrs", category: "solid" },
+  { size: '10"', price: 120, label: "XL", desc: "Solid color", time: "~12hrs", category: "solid" },
   { size: '8"', price: 200, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
   { size: '10"', price: 250, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
 ];
@@ -81,7 +81,7 @@ function PictureFrameIcon({ size = 32, opacity = 0.3 }) {
 function CheckIcon({ size = 48 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ margin: "0 auto" }}>
-      <circle cx="12" cy="12" r="11" fill="#22c55e" opacity="0.15" stroke="#22c55e" strokeWidth="1.5" />
+      <circle cx="10" cy="10" r="11" fill="#22c55e" opacity="0.15" stroke="#22c55e" strokeWidth="1.5" />
       <path d="M7 12.5l3 3 7-7" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
