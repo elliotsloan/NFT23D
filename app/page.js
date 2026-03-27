@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from "react";
 
    HOW TO ADD YOUR PHOTOS:
    1. Upload images to the public/images/ folder in your GitHub repo
-   2. Replace src="/images/placeholder.jpg" with your real filenames
+   2. Replace src="/images/DSCF5393.JPG" with your real filenames
    3. Commit  Vercel auto-deploys in ~60 seconds
 
    IMAGE NAMES USED IN THIS FILE (upload these to public/images/):
@@ -28,7 +28,7 @@ const PRICING = [
 ];
 
 const COLLECTIONS = [
-  { name: "Bear Champ", artist: "JC Rivera", status: "LIVE", accent: "#F5C518", img: "/images/bear-champ-collection.jpg" },
+  { name: "Bear Champ", artist: "JC Rivera", status: "LIVE", accent: "#F5C518", img: "/images/IMG_0718.jpeg" },
   { name: "Dead As Fuck", artist: "JC Rivera", status: "LIVE", accent: "#E53E3E", img: "/images/daf-collection.jpg" },
   { name: "Your Collection", artist: "Apply below", status: "COMING SOON", accent: "#6366f1", img: null },
 ];
@@ -260,10 +260,10 @@ function Hero({ onOrderClick }) {
           transition: "all 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.2s",
           display: "flex", flexDirection: "column", gap: "16px",
         }}>
-          <SiteImage src="/images/hero-print.jpg" label="Hero  Photo of your 3D printed Bear Champ NFT" height="320px" />
+          <SiteImage src="/images/DSCF5393.JPG" label="Hero  Photo of your 3D printed Bear Champ NFT" height="320px" />
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            <SiteImage src="/images/hero-nft.jpg" label="Bear Champ NFT (original)" height="150px" />
-            <SiteImage src="/images/hero-result.jpg" label="3D Print result" height="150px" />
+            <SiteImage src="/images/DSCF5397.JPG" label="Bear Champ NFT (original)" height="150px" />
+            <SiteImage src="/images/DSCF5398.JPG" label="3D Print result" height="150px" />
           </div>
         </div>
       </div>
