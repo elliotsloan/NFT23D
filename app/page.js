@@ -486,8 +486,34 @@ function OrderForm() {
   const [fileName, setFileName] = useState("");
   const [form, setForm] = useState({ name: "", email: "", collection: "", wallet: "", notes: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const fileRef = useRef(null);
-  const canSubmit = form.name && form.email && size;
+  const canSubmit = form.name && form.email && size && !submitting;
+
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+    setSubmitting(true);
+    try {
+      const data = new FormData();
+      data.append("access_key", "7aa9af4f-e3a0-4ff8-aa2f-9a5ee7cf0e60");
+      data.append("subject", "New NFT23D Order - " + (size ? size.size + " " + size.label : ""));
+      data.append("from_name", "NFT23D Orders");
+      data.append("name", form.name);
+      data.append("email", form.email);
+      data.append("collection", form.collection || "Not specified");
+      data.append("wallet", form.wallet || "Not provided");
+      data.append("size", size ? size.size + " " + size.label + " - $" + size.price : "");
+      data.append("notes", form.notes || "None");
+      data.append("replyto", form.email);
+      const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body: data });
+      const result = await res.json();
+      if (result.success) {
+        setSubmitted(true);
+        requestAnimationFrame(() => { requestAnimationFrame(() => { document.getElementById('order')?.scrollIntoView({ behavior: 'instant', block: 'start' }); }); });
+      } else { alert("Something went wrong. Please try again."); }
+    } catch (err) { alert("Something went wrong. Please try again."); }
+    setSubmitting(false);
+  };
 
   if (submitted) {
     const paypalUrl = `https://paypal.me/nft23d/${size?.price}`;
@@ -706,7 +732,7 @@ function OrderForm() {
         </div>
 
         <button
-          onClick={() => { if (canSubmit) { setSubmitted(true); requestAnimationFrame(() => { requestAnimationFrame(() => { document.getElementById('order')?.scrollIntoView({ behavior: 'instant', block: 'start' }); }); }); } }}
+          onClick={handleSubmit}
           disabled={!canSubmit}
           style={{
             width: "100%", padding: "18px",
@@ -719,7 +745,7 @@ function OrderForm() {
             boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none",
           }}
         >
-          {size ? `Submit Order  $${size.price}` : "Select a size to continue"}
+          {submitting ? "Submitting..." : size ? `Submit Order — ${size.price}` : "Select a size to continue"}
         </button>
       </div>
     </section>
