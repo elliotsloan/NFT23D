@@ -462,7 +462,38 @@ function OrderForm() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileRef = useRef(null);
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountStatus, setDiscountStatus] = useState(null); // null | "valid" | "invalid" | "checking" | "used_up"
+  const [discountPercent, setDiscountPercent] = useState(0);
   const canSubmit = form.name && form.email && size && !submitting;
+
+  const applyDiscount = async () => {
+    if (!discountCode.trim()) return;
+    setDiscountStatus("checking");
+    try {
+      const res = await fetch("/api/validate-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: discountCode.trim().toUpperCase() }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setDiscountStatus("valid");
+        setDiscountPercent(data.percent);
+      } else if (data.reason === "used_up") {
+        setDiscountStatus("used_up");
+        setDiscountPercent(0);
+      } else {
+        setDiscountStatus("invalid");
+        setDiscountPercent(0);
+      }
+    } catch {
+      setDiscountStatus("invalid");
+      setDiscountPercent(0);
+    }
+  };
+
+  const discountedPrice = discountStatus === "valid" && size ? Math.round(size.price * (1 - discountPercent / 100)) : size?.price;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -473,8 +504,9 @@ function OrderForm() {
       data.append("email", form.email);
       data.append("collection", form.collection || "Not specified");
       data.append("wallet", form.wallet || "Not provided");
-      data.append("size", size ? size.size + " " + size.label + " - $" + size.price : "");
+      data.append("size", size ? size.size + " " + size.label + " - $" + (discountedPrice || size.price) : "");
       data.append("notes", form.notes || "None");
+      if (discountStatus === "valid") { data.append("discountCode", discountCode.trim().toUpperCase()); data.append("originalPrice", size.price); data.append("discountedPrice", discountedPrice); }
       const imageFile = fileRef.current?.files?.[0];
       if (imageFile) { data.append("image", imageFile); }
       const res = await fetch("/api/order", { method: "POST", body: data });
@@ -506,6 +538,7 @@ function OrderForm() {
           name: form.name,
           email: form.email,
           collection: form.collection,
+          discountCode: discountStatus === "valid" ? discountCode.trim().toUpperCase() : undefined,
         }),
       });
       const data = await res.json();
@@ -521,21 +554,23 @@ function OrderForm() {
   };
 
   if (submitted) {
-    const paypalUrl = `https://paypal.me/nft23d/${size?.price}`;
-    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${size?.price}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label)}`;
+    const finalPrice = discountedPrice || size?.price;
+    const paypalUrl = `https://paypal.me/nft23d/${finalPrice}`;
+    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : ""))}`;
     return (
       <section id="order" style={{ padding: "48px 20px", background: "#08080c", textAlign: "center", minHeight: "100vh" }}>
         <div style={{ maxWidth: "480px", margin: "0 auto", padding: "56px 32px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "20px", }}>
           <div style={{ marginBottom: "16px" }}><CheckIcon size={48} /></div>
           <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px", color: "#fff", marginBottom: "12px", }}>Order Received!</h3>
           <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: "28px", }}>
-            Complete your payment below to lock in your {size?.size} {size?.label} print. We'll start on your 3D model right away!
+            Complete your payment below to lock in your {size?.size} {size?.label} print{discountStatus === "valid" ? ` at $${finalPrice}` : ""}. We'll start on your 3D model right away!
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
             <button onClick={handleStripeCheckout} disabled={stripeLoading} style={{ display: "block", width: "100%", padding: "16px 24px", background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff", borderRadius: "10px", border: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px", cursor: stripeLoading ? "wait" : "pointer", transition: "opacity 0.2s ease", boxShadow: "0 4px 24px rgba(99,102,241,0.3)", }}
               onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
               onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-            >{stripeLoading ? "Redirecting to checkout..." : `Pay $${size?.price} with Card`}</button>
+            >{stripeLoading ? "Redirecting to checkout..." : `Pay $${finalPrice} with Card`}</button>
+            {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", textAlign: "center", marginTop: "6px" }}>&#x1f389; {discountPercent}% discount applied! (was ${size?.price})</div>}
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.15)", letterSpacing: "1px", textTransform: "uppercase", marginTop: "4px", marginBottom: "4px", }}>or pay with</div>
             <div style={{ display: "flex", gap: "12px" }}>
               <a href={paypalUrl} target="_blank" rel="noopener noreferrer" style={{ flex: 1, display: "block", padding: "14px 16px", background: "#0070ba", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
@@ -620,6 +655,23 @@ function OrderForm() {
             onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
           />
         </div>
+        {/* Discount Code */}
+        <div style={{ marginBottom: "28px" }}>
+          <label style={labelStyle}>Discount Code (optional)</label>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <input placeholder="Enter code" value={discountCode} onChange={e => { setDiscountCode(e.target.value); if (discountStatus) { setDiscountStatus(null); setDiscountPercent(0); } }} style={{ ...inputStyle, flex: 1 }}
+              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
+              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
+              onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); applyDiscount(); } }}
+            />
+            <button onClick={applyDiscount} disabled={!discountCode.trim() || discountStatus === "checking"} style={{ padding: "13px 20px", background: discountStatus === "valid" ? "rgba(34,197,94,0.15)" : "rgba(99,102,241,0.1)", border: discountStatus === "valid" ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(99,102,241,0.2)", borderRadius: "8px", color: discountStatus === "valid" ? "#22c55e" : "#a5b4fc", fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: "13px", cursor: !discountCode.trim() || discountStatus === "checking" ? "not-allowed" : "pointer", transition: "all 0.2s ease", whiteSpace: "nowrap", }}>
+              {discountStatus === "checking" ? "..." : discountStatus === "valid" ? "\u2713 Applied" : "Apply"}
+            </button>
+          </div>
+          {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", marginTop: "8px" }}>&#x1f389; {discountPercent}% off applied! {size ? `$${size.price} â $${discountedPrice}` : ""}</div>}
+          {discountStatus === "invalid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#ef4444", marginTop: "8px" }}>Invalid discount code</div>}
+          {discountStatus === "used_up" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#f59e0b", marginTop: "8px" }}>This code has reached its maximum uses</div>}
+        </div>
         {/* Payment info */}
         <div style={{ background: "rgba(99,102,241,0.03)", border: "1px solid rgba(99,102,241,0.1)", borderRadius: "12px", padding: "18px 22px", marginBottom: "28px", }}>
           <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "13px", color: "#a5b4fc", marginBottom: "6px", }}>Payment Methods</div>
@@ -631,7 +683,7 @@ function OrderForm() {
           </div>
         </div>
         <button onClick={handleSubmit} disabled={!canSubmit} style={{ width: "100%", padding: "18px", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px", letterSpacing: "0.5px", background: canSubmit ? "linear-gradient(135deg, #6366f1, #a855f7)" : "rgba(255,255,255,0.03)", color: canSubmit ? "#fff" : "rgba(255,255,255,0.12)", border: "none", borderRadius: "10px", cursor: canSubmit ? "pointer" : "not-allowed", transition: "all 0.3s ease", boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none", }}>
-          {submitting ? "Submitting..." : size ? `Submit Order \u2014 $${size.price}` : "Select a size to continue"}
+          {submitting ? "Submitting..." : size ? `Submit Order \u2014 $${discountedPrice}` : "Select a size to continue"}
         </button>
       </div>
     </section>
