@@ -195,8 +195,7 @@ function Hero({ onOrderClick, onPhotoClick }) {
   useEffect(() => { setTimeout(() => setV(true), 150); }, []);
   return (
     <section style={{
-      minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
-      position: "relative", overflow: "hidden", padding: "48px 20px 32px",
+      minHeight: "100vh", position: "relative", overflow: "hidden", padding: "120px 20px 16px",
       background: "linear-gradient(160deg, #08080c 0%, #0c0818 40%, #10081a 60%, #08080c 100%)",
     }}>
       <GridBg />
@@ -205,8 +204,7 @@ function Hero({ onOrderClick, onPhotoClick }) {
       <Glow color="#F5C518" x="80%" y="15%" size={200} opacity={0.04} />
       <div style={{
         maxWidth: "1100px", width: "100%", margin: "0 auto",
-        display: "grid", gap: "48px",
-        alignItems: "center", position: "relative", zIndex: 1,
+        display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px", alignItems: "center", position: "relative", zIndex: 1,
       }}>
         {/* Left: Text */}
         <div style={{
@@ -287,7 +285,7 @@ function Hero({ onOrderClick, onPhotoClick }) {
           </div>
         </div>
         {/* Hero Photo */}
-        <div onClick={() => onPhotoClick && onPhotoClick(0)} style={{ cursor: "pointer", marginTop: "40px", borderRadius: "16px", overflow: "hidden", maxWidth: "500px", margin: "40px auto 0" }}>
+        <div onClick={() => onPhotoClick && onPhotoClick(0)} style={{ cursor: "pointer", borderRadius: "16px", overflow: "hidden", maxWidth: "500px", alignSelf: "center", justifySelf: "center" }}>
           <img src="/images/DSCF5404.JPG" alt="Bear Champ 3D Print" style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px" }} />
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", marginTop: "8px" }}>Tap to view gallery</div>
         </div>
@@ -300,7 +298,7 @@ function Hero({ onOrderClick, onPhotoClick }) {
 function FeaturedCollections({ onPhotoClick }) {
   return (
     <section style={{
-      padding: "48px 20px", position: "relative", overflow: "hidden",
+      padding: "24px 20px 48px", position: "relative", overflow: "hidden",
       background: "linear-gradient(180deg, #08080c, #0a0610, #08080c)",
     }}>
       <Glow color="#F5C518" x="5%" y="30%" size={300} opacity={0.04} />
@@ -827,7 +825,7 @@ export default function NFT23D() {
         ::-webkit-scrollbar-track { background: #08080c; }
         ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); border-radius: 3px; }
         @media (max-width: 768px) {
-          section > div > div[style*="grid-template-columns: 1fr 1fr"] {
+          div[style*="grid-template-columns"] {
             grid-template-columns: 1fr !important;
           }
         }
