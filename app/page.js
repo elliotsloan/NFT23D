@@ -260,11 +260,7 @@ function Hero({ onOrderClick }) {
           transition: "all 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.2s",
           display: "flex", flexDirection: "column", gap: "16px",
         }}>
-          <SiteImage src="/images/DSCF5393.JPG" label="Hero  Photo of your 3D printed Bear Champ NFT" height="320px" />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            <SiteImage src="/images/DSCF5397.JPG" label="Bear Champ NFT (original)" height="150px" />
-            <SiteImage src="/images/DSCF5398.JPG" label="3D Print result" height="150px" />
-          </div>
+          <SiteImage src="/images/IMG_0718.jpeg" label="Bear Champ 3D Print by NFT23D" height="500px" />
         </div>
       </div>
     </section>
