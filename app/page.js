@@ -592,9 +592,9 @@ function OrderForm() {
           <label style={labelStyle}>Select Size</label>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
             {PRICING.map((t, i) => (
-              <div key={i} onClick={() => setSize(t)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", borderRadius: "10px", cursor: "pointer", background: size?.size === t.size ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.015)", border: size?.size === t.size ? "2px solid #6366f1" : "1px solid rgba(255,255,255,0.05)", transition: "all 0.2s ease", }}>
+              <div key={i} onClick={() => setSize(t)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", borderRadius: "10px", cursor: "pointer", background: size?.price === t.price ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.015)", border: size?.price === t.price ? "2px solid #6366f1" : "1px solid rgba(255,255,255,0.05)", transition: "all 0.2s ease", }}>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#fff" }}>{t.size} {t.label}</span>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "18px", color: size?.size === t.size ? "#a5b4fc" : "rgba(255,255,255,0.4)", }}>${t.price}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "18px", color: size?.price === t.price ? "#a5b4fc" : "rgba(255,255,255,0.4)", }}>${t.price}</span>
               </div>
             ))}
           </div>
