@@ -35,10 +35,11 @@ const COLLECTIONS = [
 
 const GALLERY_PHOTOS = [
   "/images/DSCF5404.JPG",
+  "/images/b champ painted.jpeg",
+  "/images/green daf.jpeg",
   "/images/IMG_0718.jpeg",
   "/images/DSCF5393.JPG",
   "/images/DSCF5397.JPG",
-  "/images/DSCF5398.JPG",
 ];
 
 function PhotoGallery({ startIndex = 0, onClose }) {
