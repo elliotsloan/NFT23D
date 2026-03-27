@@ -43,7 +43,7 @@ export async function POST(request) {
       },
       body: JSON.stringify({
         from: "NFT23D Orders <onboarding@resend.dev>",
-        to: "info@nft23d.com",
+        to: "elliotvandelay88@gmail.com",
         subject: `New NFT23D Order - ${size}`,
         reply_to: email,
         html: emailHtml,
