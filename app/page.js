@@ -61,7 +61,7 @@ function PhotoGallery({ startIndex = 0, onClose }) {
           <div key={i} onClick={(e) => { e.stopPropagation(); setIdx(i); }} style={{ width: "10px", height: "10px", borderRadius: "50%", background: i === idx ? "#a855f7" : "rgba(255,255,255,0.3)", cursor: "pointer" }} />
         ))}
       </div>
-      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", marginTop: "8px", fontFamily: "'DM Mono', monospace" }}>{idx+1} / {GALLERY_PHOTOS.length} — Swipe or tap dots</div>
+      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", marginTop: "8px", fontFamily: "'DM Mono', monospace" }}>{idx+1} / {GALLERY_PHOTOS.length} â Swipe or tap dots</div>
     </div>
   );
 }
@@ -495,17 +495,17 @@ function OrderForm() {
     setSubmitting(true);
     try {
       const data = new FormData();
-      data.append("access_key", "7aa9af4f-e3a0-4ff8-aa2f-9a5ee7cf0e60");
-      data.append("subject", "New NFT23D Order - " + (size ? size.size + " " + size.label : ""));
-      data.append("from_name", "NFT23D Orders");
       data.append("name", form.name);
       data.append("email", form.email);
       data.append("collection", form.collection || "Not specified");
       data.append("wallet", form.wallet || "Not provided");
       data.append("size", size ? size.size + " " + size.label + " - $" + size.price : "");
       data.append("notes", form.notes || "None");
-      data.append("replyto", form.email);
-      const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body: data });
+      const imageFile = fileRef.current?.files?.[0];
+      if (imageFile) {
+        data.append("image", imageFile);
+      }
+      const res = await fetch("/api/order", { method: "POST", body: data });
       const result = await res.json();
       if (result.success) {
         setSubmitted(true);
@@ -745,7 +745,7 @@ function OrderForm() {
             boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none",
           }}
         >
-          {submitting ? "Submitting..." : size ? `Submit Order — ${size.price}` : "Select a size to continue"}
+          {submitting ? "Submitting..." : size ? `Submit Order â ${size.price}` : "Select a size to continue"}
         </button>
       </div>
     </section>
