@@ -172,7 +172,7 @@ function Hero({ onOrderClick }) {
       <Glow color="#F5C518" x="80%" y="15%" size={200} opacity={0.04} />
       <div style={{
         maxWidth: "1100px", width: "100%", margin: "0 auto",
-        display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px",
+        display: "grid", gap: "48px",
         alignItems: "center", position: "relative", zIndex: 1,
       }}>
         {/* Left: Text */}
@@ -254,15 +254,7 @@ function Hero({ onOrderClick }) {
           </div>
         </div>
         {/* Right: Image showcase */}
-        <div style={{
-          opacity: v ? 1 : 0,
-          transform: v ? "translateY(0) rotate(0deg)" : "translateY(30px) rotate(2deg)",
-          transition: "all 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.2s",
-          display: "flex", flexDirection: "column", gap: "16px",
-        }}>
-          <SiteImage src="/images/IMG_0718.jpeg" label="Bear Champ 3D Print by NFT23D" height="500px" />
         </div>
-      </div>
     </section>
   );
 }
