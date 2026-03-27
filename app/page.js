@@ -28,12 +28,13 @@ const PRICING = [
 ];
 
 const COLLECTIONS = [
-  { name: "Bear Champ", artist: "JC Rivera", status: "LIVE", accent: "#F5C518", img: "/images/IMG_0718.jpeg" },
-  { name: "Dead As Fuck", artist: "JC Rivera", status: "LIVE", accent: "#E53E3E", img: "/images/daf-collection.jpg" },
+  { name: "Bear Champ", artist: "JC Rivera", status: "LIVE", accent: "#F5C518", img: "/images/B champ logo.webp", link: "https://xrp.cafe/collection/bearchamp" },
+  { name: "Dead As Fuck", artist: "JC Rivera", status: "LIVE", accent: "#E53E3E", img: "/images/DAF LOGO.webp", link: "https://xrp.cafe/collection/bearchampdaf" },
   { name: "Your Collection", artist: "Apply below", status: "COMING SOON", accent: "#6366f1", img: null },
 ];
 
 const GALLERY_PHOTOS = [
+  "/images/DSCF5404.JPG",
   "/images/IMG_0718.jpeg",
   "/images/DSCF5393.JPG",
   "/images/DSCF5397.JPG",
@@ -189,7 +190,7 @@ function Nav({ onOrderClick }) {
 }
 
 /*  Hero  */
-function Hero({ onOrderClick }) {
+function Hero({ onOrderClick, onPhotoClick }) {
   const [v, setV] = useState(false);
   useEffect(() => { setTimeout(() => setV(true), 150); }, []);
   return (
@@ -285,7 +286,11 @@ function Hero({ onOrderClick }) {
             ))}
           </div>
         </div>
-        {/* Right: Image showcase */}
+        {/* Hero Photo */}
+        <div onClick={() => onPhotoClick && onPhotoClick(0)} style={{ cursor: "pointer", marginTop: "40px", borderRadius: "16px", overflow: "hidden", maxWidth: "500px", margin: "40px auto 0" }}>
+          <img src="/images/DSCF5404.JPG" alt="Bear Champ 3D Print" style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px" }} />
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", marginTop: "8px" }}>Tap to view gallery</div>
+        </div>
         </div>
     </section>
   );
@@ -350,6 +355,7 @@ function FeaturedCollections({ onPhotoClick }) {
                   }}>{col.status}</span>
                 </div>
                 <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>by {col.artist}</div>
+                {col.link && <a href={col.link} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: col.accent, textDecoration: "none", marginTop: "6px", display: "inline-block", opacity: 0.8 }}>View Collection &rarr;</a>}
               </div>
             </div>
           ))}
@@ -828,7 +834,7 @@ export default function NFT23D() {
       `}</style>
       <GrainOverlay />
       <Nav onOrderClick={scrollToOrder} />
-      <Hero onOrderClick={scrollToOrder} />
+      <Hero onOrderClick={scrollToOrder} onPhotoClick={(idx) => setGalleryOpen(idx)} />
       <FeaturedCollections onPhotoClick={(idx) => setGalleryOpen(idx)} />
       <HowItWorks />
       <Pricing onOrder={scrollToOrder} />
