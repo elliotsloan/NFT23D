@@ -1,8 +1,5 @@
-
-      {galleryOpen !== false && <PhotoGallery startIndex={galleryOpen} onClose={() => setGalleryOpen(false)} />}
       "use client";
-  const [galleryOpen, setGalleryOpen] = useState(false);
-import { useState, useEffect, useRef } from "react";
+  import { useState, useEffect, useRef } from "react";
 
 /*
    NFT23D.COM - Turn Any NFT Into a 3D Collectible
@@ -808,6 +805,7 @@ function Footer() {
 
 /*  Main App  */
 export default function NFT23D() {
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const scrollToOrder = () => {
     document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -837,6 +835,7 @@ export default function NFT23D() {
       <OrderForm />
       <CollectionCTA />
       <Footer />
+      {galleryOpen !== false && <PhotoGallery startIndex={galleryOpen} onClose={() => setGalleryOpen(false)} />}
     </div>
   );
 }
