@@ -1,4 +1,7 @@
-"use client";
+
+      {galleryOpen !== false && <PhotoGallery startIndex={galleryOpen} onClose={() => setGalleryOpen(false)} />}
+      "use client";
+  const [galleryOpen, setGalleryOpen] = useState(false);
 import { useState, useEffect, useRef } from "react";
 
 /*
@@ -33,6 +36,38 @@ const COLLECTIONS = [
   { name: "Your Collection", artist: "Apply below", status: "COMING SOON", accent: "#6366f1", img: null },
 ];
 
+const GALLERY_PHOTOS = [
+  "/images/IMG_0718.jpeg",
+  "/images/DSCF5393.JPG",
+  "/images/DSCF5397.JPG",
+  "/images/DSCF5398.JPG",
+];
+
+function PhotoGallery({ startIndex = 0, onClose }) {
+  const [idx, setIdx] = useState(startIndex);
+  const touchStartX = useRef(0);
+  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) setIdx(i => Math.min(i + 1, GALLERY_PHOTOS.length - 1));
+    if (diff < -50) setIdx(i => Math.max(i - 1, 0));
+  };
+  return (
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.95)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+      <div style={{ position: "absolute", top: "16px", right: "20px", color: "#fff", fontSize: "28px", cursor: "pointer", zIndex: 10 }} onClick={onClose}>X</div>
+      <div onClick={e => e.stopPropagation()} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ width: "100%", maxWidth: "600px", maxHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px" }}>
+        <img src={GALLERY_PHOTOS[idx]} alt={"Photo " + (idx+1)} style={{ maxWidth: "100%", maxHeight: "80vh", objectFit: "contain", borderRadius: "8px" }} />
+      </div>
+      <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+        {GALLERY_PHOTOS.map((_, i) => (
+          <div key={i} onClick={(e) => { e.stopPropagation(); setIdx(i); }} style={{ width: "10px", height: "10px", borderRadius: "50%", background: i === idx ? "#a855f7" : "rgba(255,255,255,0.3)", cursor: "pointer" }} />
+        ))}
+      </div>
+      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", marginTop: "8px", fontFamily: "'DM Mono', monospace" }}>{idx+1} / {GALLERY_PHOTOS.length} — Swipe or tap dots</div>
+    </div>
+  );
+}
+
 /*  Image Component  shows real image if src provided, placeholder if not  */
 function SiteImage({ src, label, width = "100%", height = "280px", style = {} }) {
   if (src) {
@@ -41,7 +76,7 @@ function SiteImage({ src, label, width = "100%", height = "280px", style = {} })
         src={src}
         alt={label || ""}
         style={{
-          width, height, borderRadius: "12px", objectFit: "cover", display: "block", ...style,
+          width, height, borderRadius: "12px", objectFit: "contain", display: "block", ...style,
         }}
       />
     );
@@ -163,7 +198,7 @@ function Hero({ onOrderClick }) {
   return (
     <section style={{
       minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
-      position: "relative", overflow: "hidden", padding: "100px 20px 60px",
+      position: "relative", overflow: "hidden", padding: "48px 20px 32px",
       background: "linear-gradient(160deg, #08080c 0%, #0c0818 40%, #10081a 60%, #08080c 100%)",
     }}>
       <GridBg />
@@ -260,10 +295,10 @@ function Hero({ onOrderClick }) {
 }
 
 /*  Featured Collections  */
-function FeaturedCollections() {
+function FeaturedCollections({ onPhotoClick }) {
   return (
     <section style={{
-      padding: "100px 20px", position: "relative", overflow: "hidden",
+      padding: "48px 20px", position: "relative", overflow: "hidden",
       background: "linear-gradient(180deg, #08080c, #0a0610, #08080c)",
     }}>
       <Glow color="#F5C518" x="5%" y="30%" size={300} opacity={0.04} />
@@ -298,12 +333,14 @@ function FeaturedCollections() {
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.borderColor = `${col.accent}44`; }}
               onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = col.status === "LIVE" ? `${col.accent}22` : "rgba(255,255,255,0.04)"; }}
             >
-              <SiteImage
-                src={col.img}
-                label={col.status === "LIVE" ? `${col.name} collection artwork` : "Your NFT collection here"}
-                height="200px"
-                style={{ borderRadius: 0, border: "none" }}
-              />
+              <div onClick={() => { if (col.img && GALLERY_PHOTOS.includes(col.img)) onPhotoClick(0); }} style={{ cursor: col.img ? "pointer" : "default" }}>
+                <SiteImage
+                  src={col.img}
+                  label={col.status === "LIVE" ? `${col.name} collection artwork` : "Your NFT collection here"}
+                  height="280px"
+                  style={{ borderRadius: 0, border: "none" }}
+                />
+              </div>
               <div style={{ padding: "20px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
                   <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "18px", color: "#fff", margin: 0 }}>{col.name}</h3>
@@ -335,7 +372,7 @@ function HowItWorks() {
   ];
   return (
     <section id="how" style={{
-      padding: "100px 20px", position: "relative", overflow: "hidden",
+      padding: "48px 20px", position: "relative", overflow: "hidden",
       background: "linear-gradient(180deg, #08080c, #0c0610, #08080c)",
     }}>
       <GridBg />
@@ -382,7 +419,7 @@ function HowItWorks() {
 function Pricing({ onOrder }) {
   return (
     <section style={{
-      padding: "100px 20px", position: "relative", overflow: "hidden",
+      padding: "48px 20px", position: "relative", overflow: "hidden",
       background: "linear-gradient(180deg, #08080c, #0a0614, #08080c)",
     }}>
       <Glow color="#6366f1" x="50%" y="40%" size={500} opacity={0.04} />
@@ -455,7 +492,7 @@ function OrderForm() {
     const paypalUrl = `https://paypal.me/nft23d/${size?.price}`;
     const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${size?.price}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label)}`;
     return (
-      <section id="order" style={{ padding: "100px 20px", background: "#08080c", textAlign: "center", minHeight: "100vh" }}>
+      <section id="order" style={{ padding: "48px 20px", background: "#08080c", textAlign: "center", minHeight: "100vh" }}>
         <div style={{
           maxWidth: "480px", margin: "0 auto", padding: "56px 32px",
           background: "rgba(99,102,241,0.04)",
@@ -533,7 +570,7 @@ function OrderForm() {
 
   return (
     <section id="order" style={{
-      padding: "100px 20px", position: "relative", overflow: "hidden",
+      padding: "48px 20px", position: "relative", overflow: "hidden",
       background: "linear-gradient(180deg, #08080c, #0a0610, #08080c)",
     }}>
       <Glow color="#a855f7" x="80%" y="15%" size={300} opacity={0.04} />
@@ -794,7 +831,7 @@ export default function NFT23D() {
       <GrainOverlay />
       <Nav onOrderClick={scrollToOrder} />
       <Hero onOrderClick={scrollToOrder} />
-      <FeaturedCollections />
+      <FeaturedCollections onPhotoClick={(idx) => setGalleryOpen(idx)} />
       <HowItWorks />
       <Pricing onOrder={scrollToOrder} />
       <OrderForm />
