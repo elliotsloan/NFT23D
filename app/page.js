@@ -458,7 +458,7 @@ function Pricing({ onOrder }) {
 function OrderForm() {
   const [size, setSize] = useState(null);
   const [fileName, setFileName] = useState("");
-  const [form, setForm] = useState({ name: "", email: "", collection: "", wallet: "", notes: "" });
+  const [form, setForm] = useState({ name: "", email: "", collection: "", address: "", city: "", state: "", zip: "", notes: "" });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileRef = useRef(null);
@@ -503,7 +503,10 @@ function OrderForm() {
       data.append("name", form.name);
       data.append("email", form.email);
       data.append("collection", form.collection || "Not specified");
-      data.append("wallet", form.wallet || "Not provided");
+      data.append("address", form.address || "Not provided");
+      data.append("city", form.city || "");
+      data.append("state", form.state || "");
+      data.append("zip", form.zip || "");
       data.append("size", size ? size.size + " " + size.label + " - $" + (discountedPrice || size.price) : "");
       data.append("notes", form.notes || "None");
       if (discountStatus === "valid") { data.append("discountCode", discountCode.trim().toUpperCase()); data.append("originalPrice", size.price); data.append("discountedPrice", discountedPrice); }
@@ -638,7 +641,7 @@ function OrderForm() {
         {[
           { key: "name", label: "Your Name", ph: "Name" },
           { key: "email", label: "Email Address", ph: "you@email.com" },
-          { key: "wallet", label: "Wallet Address (optional)", ph: "0x... or r..." },
+          { key: "address", label: "Street Address", ph: "123 Main St" },
         ].map(f => (
           <div key={f.key} style={{ marginBottom: "20px" }}>
             <label style={labelStyle}>{f.label}</label>
@@ -648,6 +651,29 @@ function OrderForm() {
             />
           </div>
         ))}
+        <div style={{ display: "flex", gap: "12px", marginBottom: "28px" }}>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>City</label>
+            <input type="text" placeholder="City" value={form.city} onChange={e => setForm({...form, city: e.target.value})} style={inputStyle}
+              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.6)"}
+              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>State</label>
+            <input type="text" placeholder="State" value={form.state} onChange={e => setForm({...form, state: e.target.value})} style={inputStyle}
+              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.6)"}
+              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>Zip Code</label>
+            <input type="text" placeholder="Zip" value={form.zip} onChange={e => setForm({...form, zip: e.target.value})} style={inputStyle}
+              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.6)"}
+              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+            />
+          </div>
+        </div>
         <div style={{ marginBottom: "28px" }}>
           <label style={labelStyle}>Special Requests (optional)</label>
           <textarea placeholder="Custom colors, specific finish, base engraving, etc." value={form.notes} rows={3} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...inputStyle, resize: "vertical" }}
