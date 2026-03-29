@@ -4,10 +4,15 @@ export async function POST(request) {
     const name = formData.get("name");
     const email = (formData.get("email") || "").trim();
     const collection = formData.get("collection") || "Not specified";
-    const wallet = formData.get("wallet") || "Not provided";
+    const address = formData.get("address") || "Not provided";
+    const city = formData.get("city") || "";
+    const state = formData.get("state") || "";
+    const zip = formData.get("zip") || "";
     const size = formData.get("size") || "Not selected";
     const notes = formData.get("notes") || "None";
     const imageFile = formData.get("image");
+
+    const shippingAddress = [address, city, state, zip].filter(Boolean).join(", ");
 
     let attachments = [];
     if (imageFile && imageFile.size > 0) {
@@ -27,7 +32,7 @@ export async function POST(request) {
     <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Email</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${email}</td></tr>
     <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Collection</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${collection}</td></tr>
     <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Size</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${size}</td></tr>
-    <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Wallet</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${wallet}</td></tr>
+    <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Shipping Address</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${shippingAddress}</td></tr>
     <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Notes</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${notes}</td></tr>
     </table>
     ${imageFile && imageFile.size > 0 ? "<p style=\"margin-top: 20px; color: #22c55e;\">NFT image attached to this email.</p>" : "<p style=\"margin-top: 20px; color: #e53e3e;\">No image was uploaded.</p>"}
