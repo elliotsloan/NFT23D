@@ -676,7 +676,7 @@ function OrderForm() {
         </div>
         <div style={{ marginBottom: "28px" }}>
           <label style={labelStyle}>Special Requests (optional)</label>
-          <textarea placeholder="Custom colors, specific finish, base engraving, etc." value={form.notes} rows={3} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...inputStyle, resize: "vertical" }}
+          <textarea placeholder="Custom colors, finish preference (matte or gloss), etc." value={form.notes} rows={3} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...inputStyle, resize: "vertical" }}
             onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
             onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
           />
