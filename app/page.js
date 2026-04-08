@@ -34,6 +34,8 @@ const COLLECTIONS = [
 ];
 
 const GALLERY_PHOTOS = [
+  "/images/IMG_1312.jpeg",
+  "/images/IMG_1311.jpeg",
   "/images/DSCF5404.JPG",
   "/images/b champ painted.jpeg",
   "/images/green daf.jpeg",
@@ -187,7 +189,7 @@ function Hero({ onOrderClick, onPhotoClick }) {
         </div>
         {/* Hero Photo */}
         <div onClick={() => onPhotoClick && onPhotoClick(0)} style={{ cursor: "pointer", borderRadius: "16px", overflow: "hidden", maxWidth: "500px", alignSelf: "center", justifySelf: "center" }}>
-          <img src="/images/DSCF5404.JPG" alt="Bear Champ 3D Print" style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px" }} />
+          <img src="/images/IMG_1312.jpeg" alt="Bear Champ 3D Print" style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px" }} />
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", marginTop: "8px" }}>Tap to view gallery</div>
         </div>
       </div>
@@ -461,6 +463,7 @@ function OrderForm() {
   const [form, setForm] = useState({ name: "", email: "", collection: "", address: "", city: "", state: "", zip: "", notes: "" });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [orderId, setOrderId] = useState("");
   const fileRef = useRef(null);
   const [discountCode, setDiscountCode] = useState("");
   const [discountStatus, setDiscountStatus] = useState(null); // null | "valid" | "invalid" | "checking" | "used_up"
@@ -515,6 +518,7 @@ function OrderForm() {
       const res = await fetch("/api/order", { method: "POST", body: data });
       const result = await res.json();
       if (result.success) {
+        setOrderId(result.orderId || "");
         setSubmitted(true);
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
@@ -559,12 +563,13 @@ function OrderForm() {
   if (submitted) {
     const finalPrice = discountedPrice || size?.price;
     const paypalUrl = `https://paypal.me/nft23d/${finalPrice}`;
-    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : ""))}`;
+    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (orderId ? " - Order " + orderId : "") + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : ""))}`;
     return (
       <section id="order" style={{ padding: "48px 20px", background: "#08080c", textAlign: "center", minHeight: "100vh" }}>
         <div style={{ maxWidth: "480px", margin: "0 auto", padding: "56px 32px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "20px", }}>
           <div style={{ marginBottom: "16px" }}><CheckIcon size={48} /></div>
           <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px", color: "#fff", marginBottom: "12px", }}>Order Received!</h3>
+          {orderId && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#a5b4fc", marginBottom: "12px", padding: "6px 16px", borderRadius: "100px", background: "rgba(99,102,241,0.08)", display: "inline-block" }}>Order #{orderId}</div>}
           <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: "28px", }}>
             Complete your payment below to lock in your {size?.size} {size?.label} print{discountStatus === "valid" ? ` at $${finalPrice}` : ""}. We'll start on your 3D model right away!
           </p>
@@ -694,7 +699,7 @@ function OrderForm() {
               {discountStatus === "checking" ? "..." : discountStatus === "valid" ? "\u2713 Applied" : "Apply"}
             </button>
           </div>
-          {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", marginTop: "8px" }}>&#x1f389; {discountPercent}% off applied! {size ? `$${size.price} â $${discountedPrice}` : ""}</div>}
+          {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", marginTop: "8px" }}>&#x1f389; {discountPercent}% off applied! {size ? `$${size.price} Ã¢ÂÂ $${discountedPrice}` : ""}</div>}
           {discountStatus === "invalid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#ef4444", marginTop: "8px" }}>Invalid discount code</div>}
           {discountStatus === "used_up" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#f59e0b", marginTop: "8px" }}>This code has reached its maximum uses</div>}
         </div>
@@ -783,4 +788,4 @@ export default function NFT23D() {
       {applyModalOpen && <CollectionApplyModal onClose={() => setApplyModalOpen(false)} />}
     </div>
   );
-}
+    }
