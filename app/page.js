@@ -34,6 +34,8 @@ const COLLECTIONS = [
 ];
 
 const GALLERY_PHOTOS = [
+  "/images/IMG_1312.jpeg",
+  "/images/IMG_1227.jpg",
   "/images/DSCF5404.JPG",
   "/images/b champ painted.jpeg",
   "/images/green daf.jpeg",
