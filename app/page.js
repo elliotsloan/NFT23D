@@ -528,6 +528,7 @@ function OrderForm() {
   };
 
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [paidWithAlt, setPaidWithAlt] = useState(null);
 
   const handleStripeCheckout = async () => {
     setStripeLoading(true);
@@ -577,16 +578,22 @@ function OrderForm() {
             {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", textAlign: "center", marginTop: "6px" }}>&#x1f389; {discountPercent}% discount applied! (was ${size?.price})</div>}
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.15)", letterSpacing: "1px", textTransform: "uppercase", marginTop: "4px", marginBottom: "4px", }}>or pay with</div>
             <div style={{ display: "flex", gap: "12px" }}>
-              <a href={paypalUrl} target="_blank" rel="noopener noreferrer" style={{ flex: 1, display: "block", padding: "14px 16px", background: "#0070ba", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
+              <a href={paypalUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt('paypal')} style={{ flex: 1, display: "block", padding: "14px 16px", background: "#0070ba", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
                 onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
                 onMouseLeave={e => e.currentTarget.style.opacity = "1"}
               >PayPal</a>
-              <a href={venmoUrl} target="_blank" rel="noopener noreferrer" style={{ flex: 1, display: "block", padding: "14px 16px", background: "#3D95CE", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
+              <a href={venmoUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt('venmo')} style={{ flex: 1, display: "block", padding: "14px 16px", background: "#3D95CE", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
                 onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
                 onMouseLeave={e => e.currentTarget.style.opacity = "1"}
               >Venmo</a>
             </div>
           </div>
+          {paidWithAlt && (
+            <div style={{ marginTop: "16px", padding: "16px 20px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: "10px", textAlign: "center" }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px", color: "#22c55e", marginBottom: "6px" }}>&#10003; {paidWithAlt === 'paypal' ? 'PayPal' : 'Venmo'} payment link opened!</p>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8 }}>Complete your payment there and you're all set. We'll email you a confirmation once payment clears and get started on your print right away.</p>
+            </div>
+          )}
           <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", lineHeight: 1.8, }}>
             After payment, you'll get an email confirmation and a 48hr print update.
           </p>
