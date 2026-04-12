@@ -124,7 +124,7 @@ export async function POST(request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "NFT23D <orders@nft23d.com>",
+            from: "NFT23D <info@nft23d.com>",
             to: email,
             subject: `Your NFT23D Order ${orderId} - Confirmed!`,
             html: customerEmailHtml,
