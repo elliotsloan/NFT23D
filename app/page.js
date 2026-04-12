@@ -447,10 +447,10 @@ function Pricing({ onOrder }) {
             );
           })}
         </div>
-        <div style={{ textAlign: "center", marginTop: "32px", fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.2)", }}>
+        <div style={{ textAlign: "center", marginTop: "56px", fontFamily: "'DM Mono', monospace", fontSize: "18px", color: "rgba(255,255,255,0.3)", }}>
           Custom sizes and bulk orders available  reach out for a quote
         </div>
-        <div style={{ textAlign: "center", marginTop: "8px", fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.15)", }}>Please allow 3-4 weeks turnaround time for hand painted pieces</div>
+        <div style={{ textAlign: "center", marginTop: "16px", fontFamily: "'DM Mono', monospace", fontSize: "15px", color: "rgba(255,255,255,0.2)", }}>Please allow 3-4 weeks turnaround time for hand painted pieces</div>
       </div>
     </section>
   );
