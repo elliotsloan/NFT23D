@@ -177,7 +177,6 @@ function Hero({ onOrderClick, onPhotoClick }) {
           <div style={{ display: "flex", gap: "36px", marginTop: "48px" }}>
             {[
               { val: "Any NFT", label: "Collection" },
-              { val: "48hr", label: "Print Time" },
               { val: "$60+", label: "Starting At" },
             ].map((s, i) => (
               <div key={i} style={{ opacity: v ? 1 : 0, transition: `all 0.7s ${0.5 + i * 0.12}s ease` }}>
@@ -443,7 +442,7 @@ function Pricing({ onOrder }) {
                 <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: tier.category === "painted" ? "#F5C518" : "rgba(255,255,255,0.4)", marginBottom: "6px" }}>{tier.size} {tier.label}</div>
                 <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "42px", color: "#fff", lineHeight: 1 }}>${tier.price}</div>
                 <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", marginTop: "6px" }}>{tier.desc}</div>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(99,102,241,0.5)", marginTop: "10px" }}>Print time: {tier.time}</div>
+                
               </div>
             );
           })}
