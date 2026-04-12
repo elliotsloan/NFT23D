@@ -177,7 +177,7 @@ function Hero({ onOrderClick, onPhotoClick }) {
             {[
               { val: "Any NFT", label: "Collection" },
               { val: "48hr", label: "Print Time" },
-              { val: "$40+", label: "Starting At" },
+              { val: "$60+", label: "Starting At" },
             ].map((s, i) => (
               <div key={i} style={{ opacity: v ? 1 : 0, transition: `all 0.7s ${0.5 + i * 0.12}s ease` }}>
                 <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "20px", color: "#fff" }}>{s.val}</div>
@@ -681,23 +681,6 @@ function OrderForm() {
             onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
             onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
           />
-        </div>
-        {/* Discount Code */}
-        <div style={{ marginBottom: "28px" }}>
-          <label style={labelStyle}>Discount Code (optional)</label>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <input placeholder="Enter code" value={discountCode} onChange={e => { setDiscountCode(e.target.value); if (discountStatus) { setDiscountStatus(null); setDiscountPercent(0); } }} style={{ ...inputStyle, flex: 1 }}
-              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
-              onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); applyDiscount(); } }}
-            />
-            <button onClick={applyDiscount} disabled={!discountCode.trim() || discountStatus === "checking"} style={{ padding: "13px 20px", background: discountStatus === "valid" ? "rgba(34,197,94,0.15)" : "rgba(99,102,241,0.1)", border: discountStatus === "valid" ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(99,102,241,0.2)", borderRadius: "8px", color: discountStatus === "valid" ? "#22c55e" : "#a5b4fc", fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: "13px", cursor: !discountCode.trim() || discountStatus === "checking" ? "not-allowed" : "pointer", transition: "all 0.2s ease", whiteSpace: "nowrap", }}>
-              {discountStatus === "checking" ? "..." : discountStatus === "valid" ? "\u2713 Applied" : "Apply"}
-            </button>
-          </div>
-          {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", marginTop: "8px" }}>&#x1f389; {discountPercent}% off applied! {size ? `$${size.price} â $${discountedPrice}` : ""}</div>}
-          {discountStatus === "invalid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#ef4444", marginTop: "8px" }}>Invalid discount code</div>}
-          {discountStatus === "used_up" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#f59e0b", marginTop: "8px" }}>This code has reached its maximum uses</div>}
         </div>
         {/* Payment info */}
         <div style={{ background: "rgba(99,102,241,0.03)", border: "1px solid rgba(99,102,241,0.1)", borderRadius: "12px", padding: "18px 22px", marginBottom: "28px", }}>
