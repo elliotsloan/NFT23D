@@ -517,6 +517,7 @@ function OrderForm() {
       const result = await res.json();
       if (result.success) {
         setSubmitted(true);
+        setSubmittedOrderId(result.orderId);
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             document.getElementById('order')?.scrollIntoView({ behavior: 'instant', block: 'start' });
@@ -529,6 +530,7 @@ function OrderForm() {
 
   const [stripeLoading, setStripeLoading] = useState(false);
   const [paidWithAlt, setPaidWithAlt] = useState(null);
+  const [submittedOrderId, setSubmittedOrderId] = useState(null);
 
   const handleStripeCheckout = async () => {
     setStripeLoading(true);
@@ -561,12 +563,13 @@ function OrderForm() {
   if (submitted) {
     const finalPrice = discountedPrice || size?.price;
     const paypalUrl = `https://paypal.me/nft23d/${finalPrice}`;
-    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : ""))}`;
+    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : "") + (submittedOrderId ? " [" + submittedOrderId + "]" : ""))}`;
     return (
       <section id="order" style={{ padding: "48px 20px", background: "#08080c", textAlign: "center", minHeight: "100vh" }}>
         <div style={{ maxWidth: "480px", margin: "0 auto", padding: "56px 32px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "20px", }}>
           <div style={{ marginBottom: "16px" }}><CheckIcon size={48} /></div>
           <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px", color: "#fff", marginBottom: "12px", }}>Order Received!</h3>
+          {submittedOrderId && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", letterSpacing: "3px", color: "rgba(255,255,255,0.25)", marginBottom: "16px", marginTop: "-4px" }}>ORDER <span style={{ color: "#a5b4fc", fontWeight: 700, fontSize: "14px" }}>{submittedOrderId}</span></div>}
           <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: "28px", }}>
             Complete your payment below to lock in your {size?.size} {size?.label} print{discountStatus === "valid" ? ` at $${finalPrice}` : ""}. We'll start on your 3D model right away!
           </p>
