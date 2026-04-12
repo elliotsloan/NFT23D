@@ -19,7 +19,6 @@ import { useState, useEffect, useRef } from "react";
 */
 
 const PRICING = [
-  { size: '3"', price: 40, label: "Mini", desc: "Solid color", time: "~2hrs", category: "solid" },
   { size: '5"', price: 60, label: "Standard", desc: "Solid color", time: "~4hrs", category: "solid" },
   { size: '8"', price: 80, label: "Large", desc: "Solid color", time: "~7hrs", category: "solid" },
   { size: '10"', price: 120, label: "XL", desc: "Solid color", time: "~12hrs", category: "solid" },
