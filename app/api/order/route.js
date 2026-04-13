@@ -7,6 +7,7 @@ export async function POST(request) {
     const wallet = formData.get("wallet") || "Not provided";
     const size = formData.get("size") || "Not selected";
     const notes = formData.get("notes") || "None";
+    const paymentMethod = formData.get("paymentMethod") || "Not specified";
     const imageFile = formData.get("image");
 
     // Extract address fields
@@ -53,6 +54,7 @@ export async function POST(request) {
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Name</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${name}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Email</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${email}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Size</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${size}</td></tr>
+      <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Payment Method</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; font-size: 15px; color: ${paymentMethod === 'Stripe / Card' ? '#16a34a' : paymentMethod === 'PayPal' ? '#1d4ed8' : paymentMethod === 'Venmo' ? '#7c3aed' : '#555'};">${paymentMethod}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Price</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #22c55e; font-size: 18px;">$${price}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Address</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${fullAddress}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Collection</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${collection}</td></tr>
