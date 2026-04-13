@@ -190,6 +190,7 @@ function Hero({ onOrderClick, onPhotoClick }) {
         <div onClick={() => onPhotoClick && onPhotoClick(0)} style={{ cursor: "pointer", borderRadius: "16px", overflow: "hidden", maxWidth: "500px", alignSelf: "center", justifySelf: "center" }}>
           <img src="/images/BAYC Hero shot.jpg" alt="BAYC Hand Painted 3D Print" style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px" }} />
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", marginTop: "8px" }}>Tap to view gallery</div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", textAlign: "center", marginTop: "6px" }}>3D model shown above is 10&quot; hand painted</div>
         </div>
       </div>
     </section>
