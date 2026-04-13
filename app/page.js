@@ -22,8 +22,8 @@ const PRICING = [
   { size: '5"', price: 60, label: "Standard", desc: "Solid color", time: "~4hrs", category: "solid" },
   { size: '8"', price: 80, label: "Large", desc: "Solid color", time: "~7hrs", category: "solid" },
   { size: '10"', price: 120, label: "XL", desc: "Solid color", time: "~12hrs", category: "solid" },
-  { size: '8"', price: 200, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
-  { size: '10"', price: 250, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
+  { size: '8"', price: 350, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
+  { size: '10"', price: 400, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
 ];
 
 const COLLECTIONS = [
