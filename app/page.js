@@ -428,8 +428,8 @@ function Pricing({ onOrder }) {
       <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: "56px" }}>
           <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase", }}></span>
-          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 5.5vw, 56px)", color: "#fff", marginTop: "10px", }}>Free Shipping on All Orders</h2>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px", }}>Free shipping included on all orders</p>
+          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 5.5vw, 56px)", color: "#fff", marginTop: "10px", }}>Free US Shipping</h2>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px", }}>Free shipping on all US orders · $35 international</p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px" }}>
           {PRICING.map((tier, i) => {
