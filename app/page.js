@@ -512,6 +512,7 @@ function OrderForm() {
       data.append("zip", form.zip || "");
       data.append("size", size ? size.size + " " + size.label + " - $" + (discountedPrice || size.price) : "");
       data.append("notes", form.notes || "None");
+      data.append("paymentMethod", paymentMethod || "Not specified");
       if (discountStatus === "valid") { data.append("discountCode", discountCode.trim().toUpperCase()); data.append("originalPrice", size.price); data.append("discountedPrice", discountedPrice); }
       const imageFile = fileRef.current?.files?.[0];
       if (imageFile) { data.append("image", imageFile); }
@@ -532,6 +533,7 @@ function OrderForm() {
 
   const [stripeLoading, setStripeLoading] = useState(false);
   const [paidWithAlt, setPaidWithAlt] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [submittedOrderId, setSubmittedOrderId] = useState(null);
 
   const handleStripeCheckout = async () => {
@@ -702,6 +704,14 @@ function OrderForm() {
             <span style={{ color: "#fff" }}>PayPal</span>{" | "}
             <span style={{ color: "#fff" }}>Venmo</span>
             {" -- Payment options shown instantly after you submit."}
+          </div>
+        </div>
+        <div style={{ marginBottom: "16px" }}>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "2px", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginBottom: "10px" }}>How are you paying?</div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            {["Stripe / Card", "PayPal", "Venmo"].map(method => (
+              <button key={method} type="button" onClick={() => setPaymentMethod(method)} style={{ flex: 1, padding: "10px 6px", fontFamily: "'DM Mono', monospace", fontSize: "11px", borderRadius: "8px", border: paymentMethod === method ? "1px solid rgba(99,102,241,0.8)" : "1px solid rgba(255,255,255,0.1)", background: paymentMethod === method ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.03)", color: paymentMethod === method ? "#a5b4fc" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.2s" }}>{method}</button>
+            ))}
           </div>
         </div>
         <button onClick={handleSubmit} disabled={!canSubmit} style={{ width: "100%", padding: "18px", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px", letterSpacing: "0.5px", background: canSubmit ? "linear-gradient(135deg, #6366f1, #a855f7)" : "rgba(255,255,255,0.03)", color: canSubmit ? "#fff" : "rgba(255,255,255,0.12)", border: "none", borderRadius: "10px", cursor: canSubmit ? "pointer" : "not-allowed", transition: "all 0.3s ease", boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none", }}>
