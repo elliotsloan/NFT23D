@@ -429,7 +429,7 @@ function Pricing({ onOrder }) {
         <div style={{ textAlign: "center", marginBottom: "56px" }}>
           <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase", }}></span>
           <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 5.5vw, 56px)", color: "#fff", marginTop: "10px", }}>Free US Shipping</h2>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px", }}>Free shipping on all US orders · $35 international</p>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px", }}>Free shipping on all US orders Â· $35 international</p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px" }}>
           {PRICING.map((tier, i) => {
@@ -468,6 +468,22 @@ function OrderForm() {
   const [discountCode, setDiscountCode] = useState("");
   const [discountStatus, setDiscountStatus] = useState(null); // null | "valid" | "invalid" | "checking" | "used_up"
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [xrpPrice, setXrpPrice] = useState(null);
+  const [ethPrice, setEthPrice] = useState(null);
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ripple,ethereum&vs_currencies=usd");
+        const data = await res.json();
+        if (data?.ripple?.usd) setXrpPrice(data.ripple.usd);
+        if (data?.ethereum?.usd) setEthPrice(data.ethereum.usd);
+      } catch {}
+    };
+    fetchPrices();
+    const iv = setInterval(fetchPrices, 60000);
+    return () => clearInterval(iv);
+  }, []);
   const canSubmit = form.name && form.email && size && !submitting;
 
   const applyDiscount = async () => {
@@ -568,6 +584,12 @@ function OrderForm() {
     const finalPrice = discountedPrice || size?.price;
     const paypalUrl = `https://paypal.me/nft23d/${finalPrice}`;
     const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : "") + (submittedOrderId ? " [" + submittedOrderId + "]" : ""))}`;
+    const XRP_ADDRESS = "rKydygGZZhmKteEZpEWtHACoTdWZ3c1Bep";
+    const xrpAmount = xrpPrice ? (finalPrice / xrpPrice).toFixed(2) : null;
+    const xrpQrUrl = xrpAmount ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`xrpl:${XRP_ADDRESS}?amount=${xrpAmount}`)}&bgcolor=08080c&color=ffffff&margin=8` : null;
+    const ETH_ADDRESS = "0x72F8305567cd508c38F00A8d0F7a5940d45D6e7b";
+    const ethAmount = ethPrice ? (finalPrice / ethPrice).toFixed(6) : null;
+    const ethQrUrl = ethAmount ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`ethereum:${ETH_ADDRESS}?value=${ethAmount}`)}&bgcolor=08080c&color=ffffff&margin=8` : null;
     return (
       <section id="order" style={{ padding: "48px 20px", background: "#08080c", textAlign: "center", minHeight: "100vh" }}>
         <div style={{ maxWidth: "480px", margin: "0 auto", padding: "56px 32px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "20px", }}>
@@ -584,21 +606,58 @@ function OrderForm() {
             >{stripeLoading ? "Redirecting to checkout..." : `Pay $${finalPrice} with Card`}</button>
             {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", textAlign: "center", marginTop: "6px" }}>&#x1f389; {discountPercent}% discount applied! (was ${size?.price})</div>}
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.15)", letterSpacing: "1px", textTransform: "uppercase", marginTop: "4px", marginBottom: "4px", }}>or pay with</div>
-            <div style={{ display: "flex", gap: "12px" }}>
-              <a href={paypalUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt('paypal')} style={{ flex: 1, display: "block", padding: "14px 16px", background: "#0070ba", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              <a href={paypalUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt('paypal')} style={{ display: "block", padding: "14px 16px", background: "#0070ba", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease" }}
                 onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
                 onMouseLeave={e => e.currentTarget.style.opacity = "1"}
               >PayPal</a>
-              <a href={venmoUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt('venmo')} style={{ flex: 1, display: "block", padding: "14px 16px", background: "#3D95CE", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease", }}
+              <a href={venmoUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt('venmo')} style={{ display: "block", padding: "14px 16px", background: "#3D95CE", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease" }}
                 onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
                 onMouseLeave={e => e.currentTarget.style.opacity = "1"}
               >Venmo</a>
+              <button onClick={() => setPaidWithAlt('xrp')} style={{ display: "block", padding: "14px 16px", background: "linear-gradient(135deg, #1a1a35, #12122a)", color: "#fff", borderRadius: "10px", border: "1px solid rgba(99,102,241,0.3)", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", cursor: "pointer", transition: "opacity 0.2s ease" }}
+                onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+              >&#9889; XRP</button>
+              <button onClick={() => setPaidWithAlt('eth')} style={{ display: "block", padding: "14px 16px", background: "linear-gradient(135deg, #1a1a2e, #1e1e3a)", color: "#fff", borderRadius: "10px", border: "1px solid rgba(99,102,241,0.3)", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", cursor: "pointer", transition: "opacity 0.2s ease" }}
+                onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+              >&#9830; ETH</button>
             </div>
           </div>
-          {paidWithAlt && (
+          {(paidWithAlt === 'venmo' || paidWithAlt === 'paypal') && (
             <div style={{ marginTop: "16px", padding: "16px 20px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: "10px", textAlign: "center" }}>
               <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px", color: "#22c55e", marginBottom: "6px" }}>&#10003; {paidWithAlt === 'paypal' ? 'PayPal' : 'Venmo'} payment link opened!</p>
               <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8 }}>Complete your payment there and you're all set. We'll email you a confirmation once payment clears and get started on your print right away.</p>
+            </div>
+          )}
+
+          {paidWithAlt === 'xrp' && xrpQrUrl && (
+            <div style={{ marginTop: "16px", padding: "20px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "12px", textAlign: "center" }}>
+              <img src={xrpQrUrl} alt="XRP QR Code" style={{ width: 180, height: 180, borderRadius: 8, marginBottom: 12 }} />
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px", color: "#fff", marginBottom: 2 }}>{xrpAmount} <span style={{ color: "#a5b4fc", fontSize: "16px" }}>XRP</span></p>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>${finalPrice} USD</p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
+                <code style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#a5b4fc", background: "rgba(99,102,241,0.1)", padding: "6px 10px", borderRadius: 6, wordBreak: "break-all" }}>{XRP_ADDRESS}</code>
+                <button onClick={() => navigator.clipboard.writeText(XRP_ADDRESS)} style={{ padding: "6px 10px", background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 6, color: "#a5b4fc", cursor: "pointer", fontSize: "11px", fontFamily: "'DM Mono', monospace" }}>Copy</button>
+              </div>
+              {submittedOrderId && <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Include order <strong style={{ color: "#a5b4fc" }}>{submittedOrderId}</strong> in the memo/tag if possible.</p>}
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", lineHeight: 1.8 }}>Open Xaman or any XRP wallet, scan the QR or paste the address, and send the exact amount above. XRPL transactions settle in seconds.</p>
+            </div>
+          )}
+
+          {paidWithAlt === 'eth' && ethQrUrl && (
+            <div style={{ marginTop: "16px", padding: "20px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "12px", textAlign: "center" }}>
+              <img src={ethQrUrl} alt="ETH QR Code" style={{ width: 180, height: 180, borderRadius: 8, marginBottom: 12 }} />
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px", color: "#fff", marginBottom: 2 }}>{ethAmount} <span style={{ color: "#627eea", fontSize: "16px" }}>ETH</span></p>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>${finalPrice} USD</p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
+                <code style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#627eea", background: "rgba(98,126,234,0.1)", padding: "6px 10px", borderRadius: 6, wordBreak: "break-all" }}>{ETH_ADDRESS}</code>
+                <button onClick={() => navigator.clipboard.writeText(ETH_ADDRESS)} style={{ padding: "6px 10px", background: "rgba(98,126,234,0.15)", border: "1px solid rgba(98,126,234,0.3)", borderRadius: 6, color: "#627eea", cursor: "pointer", fontSize: "11px", fontFamily: "'DM Mono', monospace" }}>Copy</button>
+              </div>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#f59e0b", lineHeight: 1.8, marginBottom: 8 }}>⚠️ Send only on Ethereum mainnet. Do not send over any other network or funds may be lost.</p>
+              {submittedOrderId && <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Include order <strong style={{ color: "#627eea" }}>{submittedOrderId}</strong> in the memo/data field if possible.</p>}
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", lineHeight: 1.8 }}>Open MetaMask, Coinbase Wallet, or any Ethereum wallet, scan the QR or paste the address, and send the exact amount above.</p>
             </div>
           )}
           <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", lineHeight: 1.8, }}>
@@ -702,14 +761,16 @@ function OrderForm() {
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.35)", lineHeight: 1.7, }}>
             <span style={{ color: "#fff" }}>Card</span>{" | "}
             <span style={{ color: "#fff" }}>PayPal</span>{" | "}
-            <span style={{ color: "#fff" }}>Venmo</span>
+            <span style={{ color: "#fff" }}>Venmo</span>{" | "}
+            <span style={{ color: "#fff" }}>XRP</span>{" | "}
+            <span style={{ color: "#fff" }}>ETH</span>
             {" -- Payment options shown instantly after you submit."}
           </div>
         </div>
         <div style={{ marginBottom: "16px" }}>
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "2px", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginBottom: "10px" }}>How are you paying?</div>
           <div style={{ display: "flex", gap: "8px" }}>
-            {["Stripe / Card", "PayPal", "Venmo"].map(method => (
+            {["Stripe / Card", "PayPal", "Venmo", "XRP", "ETH"].map(method => (
               <button key={method} type="button" onClick={() => setPaymentMethod(method)} style={{ flex: 1, padding: "10px 6px", fontFamily: "'DM Mono', monospace", fontSize: "11px", borderRadius: "8px", border: paymentMethod === method ? "1px solid rgba(99,102,241,0.8)" : "1px solid rgba(255,255,255,0.1)", background: paymentMethod === method ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.03)", color: paymentMethod === method ? "#a5b4fc" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.2s" }}>{method}</button>
             ))}
           </div>
@@ -750,7 +811,7 @@ function Footer() {
       <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.12)", marginBottom: "6px", }}>Turning digital art into physical collectibles</div>
       <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(255,255,255,0.08)", }}>Built by @elliotsloan</div>
       <div style={{ marginTop: "16px", display: "flex", gap: "16px", justifyContent: "center" }}>
-        {["PayPal", "Venmo"].map(m => (
+        {["PayPal", "Venmo", "XRP", "ETH"].map(m => (
           <span key={m} style={{ fontFamily: "'DM Mono', monospace", fontSize: "9px", color: "rgba(255,255,255,0.1)", letterSpacing: "1.5px", textTransform: "uppercase", }}>{m}</span>
         ))}
       </div>
