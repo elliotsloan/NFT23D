@@ -29,7 +29,7 @@ const PRICING = [
 const COLLECTIONS = [
   { name: "Bear Champ", artist: "JC Rivera", status: "LIVE", accent: "#F5C518", img: "/images/B champ logo.webp", link: "https://xrp.cafe/collection/bearchamp" },
   { name: "Dead As Fuck", artist: "JC Rivera", status: "LIVE", accent: "#E53E3E", img: "/images/DAF LOGO.webp", link: "https://xrp.cafe/collection/bearchampdaf" },
-  { name: "Bored Ape Yacht Club", artist: "Yuga Labs", status: "LIVE", accent: "#FFD700", img: "/images/Sailor BAYC.jpg", link: "https://opensea.io/collection/boredapeyachtclub" },
+  { name: "Bored Ape Yacht Club", artist: "Yuga Labs", status: "LIVE", accent: "#FFD700", img: "/images/BAYC Logo.jpg", link: "https://opensea.io/collection/boredapeyachtclub" },
   { name: "Your Collection", artist: "Apply below", status: "COMING SOON", accent: "#6366f1", img: null },
 ];
 
@@ -216,7 +216,7 @@ function FeaturedCollections({ onPhotoClick, onApplyClick }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
           {COLLECTIONS.map((col, i) => (
             <div key={i}
-              onClick={() => { if (col.name === "Your Collection" && onApplyClick) onApplyClick(); }}
+              onClick={() => { if (col.name === "Your Collection" && onApplyClick) onApplyClick(); else if (col.link) window.open(col.link, '_blank'); }}
               style={{
                 background: "rgba(255,255,255,0.02)",
                 border: `1px solid ${col.status === "LIVE" ? `${col.accent}22` : "rgba(255,255,255,0.04)"}`,
