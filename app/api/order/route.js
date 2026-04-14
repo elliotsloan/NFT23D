@@ -54,7 +54,7 @@ export async function POST(request) {
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Name</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${name}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Email</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${email}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Size</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${size}</td></tr>
-      <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Payment Method</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; font-size: 15px; color: ${paymentMethod === 'Stripe / Card' ? '#16a34a' : paymentMethod === 'PayPal' ? '#1d4ed8' : paymentMethod === 'Venmo' ? '#7c3aed' : '#555'};">${paymentMethod}</td></tr>
+      <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Payment Method</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; font-size: 15px; color: ${paymentMethod === 'Stripe / Card' ? '#16a34a' : paymentMethod === 'PayPal' ? '#1d4ed8' : paymentMethod === 'XRP' ? '#6366f1' : paymentMethod === 'ETH' ? '#627eea' : paymentMethod === 'Venmo' ? '#7c3aed' : '#555'};">${paymentMethod}${paymentMethod === 'XRP' ? ' ⚡' : paymentMethod === 'ETH' ? ' ♦️' : ''}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Price</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #22c55e; font-size: 18px;">$${price}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Address</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${fullAddress}</td></tr>
       <tr><td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #333;">Collection</td><td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${collection}</td></tr>
@@ -86,7 +86,7 @@ export async function POST(request) {
       <tr><td style="padding: 8px 0; font-weight: bold; color: #333; border-top: 2px solid #e0e0e0; font-size: 18px;">Total</td><td style="padding: 8px 0; text-align: right; border-top: 2px solid #e0e0e0; font-size: 18px; font-weight: bold; color: #22c55e;">$${price}</td></tr>
     </table>
     <div style="margin-top: 20px; padding: 16px; background: #e8f5e9; border-radius: 8px;">
-      <p style="margin: 0; font-size: 14px; color: #2e7d32;"><strong>Next Step:</strong> Complete your payment via PayPal or Venmo using the links on the site. Include <strong>${orderId}</strong> in your payment memo so we can match it to your order.</p>
+      <p style="margin: 0; font-size: 14px; color: #2e7d32;"><strong>Next Step:</strong> Complete your payment via Card, PayPal, Venmo, XRP, or ETH using the options on the site. Include <strong>${orderId}</strong> in your payment memo so we can match it to your order.</p>
     </div>
     <p style="margin-top: 20px; color: #999; font-size: 12px; text-align: center;">Questions? Reply to this email or DM us @elliotsloan</p>
   </div>
