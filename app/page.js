@@ -29,11 +29,13 @@ const PRICING = [
 const COLLECTIONS = [
   { name: "Bear Champ", artist: "JC Rivera", status: "LIVE", accent: "#F5C518", img: "/images/B champ logo.webp", link: "https://xrp.cafe/collection/bearchamp" },
   { name: "Dead As Fuck", artist: "JC Rivera", status: "LIVE", accent: "#E53E3E", img: "/images/DAF LOGO.webp", link: "https://xrp.cafe/collection/bearchampdaf" },
+  { name: "Bored Ape Yacht Club", artist: "Yuga Labs", status: "LIVE", accent: "#FFD700", img: "/images/Sailor BAYC.jpg", link: "https://opensea.io/collection/boredapeyachtclub" },
   { name: "Your Collection", artist: "Apply below", status: "COMING SOON", accent: "#6366f1", img: null },
 ];
 
 const GALLERY_PHOTOS = [
   "/images/BAYC Hero shot.jpg",
+  "/images/Sailor BAYC.jpg",
   "/images/IMG_1312.jpeg",
   "/images/IMG_1227.jpg",
   "/images/DSCF5404.JPG",
