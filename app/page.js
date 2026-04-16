@@ -261,6 +261,9 @@ function CollectionApplyModal({ onClose }) {
 
   const canSubmit = form.projectLink && form.email && !submitting;
 
+  const isInternational = form.country && form.country.trim() !== "" && !["us","usa","united states","united states of america"].includes(form.country.trim().toLowerCase());
+  const intlFee = isInternational ? 35 : 0;
+
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
@@ -583,9 +586,7 @@ function OrderForm() {
   };
 
   if (submitted) {
-    const isInternational = form.country && form.country.trim() !== "" && !["us","usa","united states","united states of america"].includes(form.country.trim().toLowerCase());
-  const intlFee = isInternational ? 35 : 0;
-  const finalPrice = (discountedPrice || size?.price) + intlFee;
+    const finalPrice = (discountedPrice || size?.price) + intlFee;
     const paypalUrl = `https://paypal.me/nft23d/${finalPrice}`;
     const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : "") + (submittedOrderId ? " [" + submittedOrderId + "]" : ""))}`;
     const XRP_ADDRESS = "rKydygGZZhmKteEZpEWtHACoTdWZ3c1Bep";
