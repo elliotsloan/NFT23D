@@ -431,7 +431,7 @@ function Pricing({ onOrder }) {
         <div style={{ textAlign: "center", marginBottom: "56px" }}>
           <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase", }}></span>
           <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 5.5vw, 56px)", color: "#fff", marginTop: "10px", }}>Free US Shipping</h2>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px", }}>Free shipping on all US orders Â· $35 international</p>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px", }}>Free shipping on all US orders ÃÂ· $35 international</p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px" }}>
           {PRICING.map((tier, i) => {
@@ -463,7 +463,7 @@ function Pricing({ onOrder }) {
 function OrderForm() {
   const [size, setSize] = useState(null);
   const [fileName, setFileName] = useState("");
-  const [form, setForm] = useState({ name: "", email: "", collection: "", address: "", city: "", state: "", zip: "", notes: "" });
+  const [form, setForm] = useState({ name: "", email: "", collection: "", address: "", city: "", state: "", zip: "", country: "", notes: "" });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileRef = useRef(null);
@@ -583,7 +583,9 @@ function OrderForm() {
   };
 
   if (submitted) {
-    const finalPrice = discountedPrice || size?.price;
+    const isInternational = form.country && form.country.trim() !== "" && !["us","usa","united states","united states of america"].includes(form.country.trim().toLowerCase());
+  const intlFee = isInternational ? 35 : 0;
+  const finalPrice = (discountedPrice || size?.price) + intlFee;
     const paypalUrl = `https://paypal.me/nft23d/${finalPrice}`;
     const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : "") + (submittedOrderId ? " [" + submittedOrderId + "]" : ""))}`;
     const XRP_ADDRESS = "rKydygGZZhmKteEZpEWtHACoTdWZ3c1Bep";
@@ -657,7 +659,7 @@ function OrderForm() {
                 <code style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#627eea", background: "rgba(98,126,234,0.1)", padding: "6px 10px", borderRadius: 6, wordBreak: "break-all" }}>{ETH_ADDRESS}</code>
                 <button onClick={() => navigator.clipboard.writeText(ETH_ADDRESS)} style={{ padding: "6px 10px", background: "rgba(98,126,234,0.15)", border: "1px solid rgba(98,126,234,0.3)", borderRadius: 6, color: "#627eea", cursor: "pointer", fontSize: "11px", fontFamily: "'DM Mono', monospace" }}>Copy</button>
               </div>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#f59e0b", lineHeight: 1.8, marginBottom: 8 }}>⚠️ Send only on Ethereum mainnet. Do not send over any other network or funds may be lost.</p>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#f59e0b", lineHeight: 1.8, marginBottom: 8 }}>â ï¸ Send only on Ethereum mainnet. Do not send over any other network or funds may be lost.</p>
               {submittedOrderId && <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Include order <strong style={{ color: "#627eea" }}>{submittedOrderId}</strong> in the memo/data field if possible.</p>}
               <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", lineHeight: 1.8 }}>Open MetaMask, Coinbase Wallet, or any Ethereum wallet, scan the QR or paste the address, and send the exact amount above.</p>
             </div>
@@ -749,6 +751,14 @@ function OrderForm() {
               onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
             />
           </div>
+        </div>
+        <div style={{ marginBottom: "28px" }}>
+          <label style={labelStyle}>Country</label>
+          <input type="text" placeholder="US" value={form.country} onChange={e => setForm({...form, country: e.target.value})} style={inputStyle}
+              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.6)"}
+              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+            />
+            {isInternational && <p style={{ color: "#f59e0b", fontSize: "13px", marginTop: "6px" }}>International shipping: +$35.00 will be added to your total.</p>}
         </div>
         <div style={{ marginBottom: "28px" }}>
           <label style={labelStyle}>Special Requests (optional)</label>
