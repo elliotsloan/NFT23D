@@ -261,9 +261,6 @@ function CollectionApplyModal({ onClose }) {
 
   const canSubmit = form.projectLink && form.email && !submitting;
 
-  const isInternational = form.country && form.country.trim() !== "" && !["us","usa","united states","united states of america"].includes(form.country.trim().toLowerCase());
-  const intlFee = isInternational ? 35 : 0;
-
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
@@ -490,6 +487,9 @@ function OrderForm() {
     return () => clearInterval(iv);
   }, []);
   const canSubmit = form.name && form.email && size && !submitting;
+
+  const isInternational = form.country && form.country.trim() !== "" && !["us","usa","united states","united states of america"].includes(form.country.trim().toLowerCase());
+  const intlFee = isInternational ? 35 : 0;
 
   const applyDiscount = async () => {
     if (!discountCode.trim()) return;
