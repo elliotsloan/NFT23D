@@ -36,6 +36,7 @@ const GALLERY_PHOTOS = [
   "/images/BAYC Hero shot.jpg",
   "/images/Sailor BAYC.jpg",
   "/images/IMG_1312.jpeg",
+  "/images/IMG_1640.jpeg",
   "/images/IMG_1227.jpg",
   "/images/DSCF5404.JPG",
   "/images/b champ painted.jpeg",
