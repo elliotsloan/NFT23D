@@ -19,11 +19,10 @@ import { useState, useEffect, useRef } from "react";
 */
 
 const PRICING = [
-  { size: '5"', price: 60, label: "Standard", desc: "Solid color", time: "~4hrs", category: "solid" },
-  { size: '8"', price: 80, label: "Large", desc: "Solid color", time: "~7hrs", category: "solid" },
-  { size: '10"', price: 120, label: "XL", desc: "Solid color", time: "~12hrs", category: "solid" },
-  { size: '8"', price: 350, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
-  { size: '10"', price: 400, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks", category: "painted" },
+  { size: '6"', price: 300, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks" },
+  { size: '8"', price: 350, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks" },
+  { size: '10"', price: 400, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks" },
+  { size: '12"', price: 450, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks" },
 ];
 
 const COLLECTIONS = [
@@ -179,7 +178,7 @@ function Hero({ onOrderClick, onPhotoClick }) {
           <div style={{ display: "flex", gap: "36px", marginTop: "48px" }}>
             {[
               { val: "Any NFT", label: "Collection" },
-              { val: "$60+", label: "Starting At" },
+              { val: "$300", label: "Starting At" },
             ].map((s, i) => (
               <div key={i} style={{ opacity: v ? 1 : 0, transition: `all 0.7s ${0.5 + i * 0.12}s ease` }}>
                 <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "20px", color: "#fff" }}>{s.val}</div>
@@ -442,7 +441,7 @@ function Pricing({ onOrder }) {
                 onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
               >
                 {pop && <div style={{ position: "absolute", top: "-11px", left: "50%", transform: "translateX(-50%)", background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff", fontFamily: "'DM Mono', monospace", fontSize: "9px", fontWeight: 700, letterSpacing: "2px", padding: "4px 14px", borderRadius: "100px", textTransform: "uppercase", }}>Popular</div>}
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: tier.category === "painted" ? "#F5C518" : "rgba(255,255,255,0.4)", marginBottom: "6px" }}>{tier.size} {tier.label}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#F5C518", marginBottom: "6px" }}>{tier.size} {tier.label}</div>
                 <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "42px", color: "#fff", lineHeight: 1 }}>${tier.price}</div>
                 <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", marginTop: "6px" }}>{tier.desc}</div>
                 
