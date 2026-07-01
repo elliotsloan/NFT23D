@@ -7,13 +7,13 @@ export async function POST(req) {
     // Build checkout session params
     const params = {
       "mode": "payment",
-      "success_url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://nft23d.com"}?payment=success`,
-      "cancel_url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://nft23d.com"}?payment=cancelled`,
+      "success_url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://sloancraft.com"}?payment=success`,
+      "cancel_url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://sloancraft.com"}?payment=cancelled`,
       "customer_email": email,
       "line_items[0][price_data][currency]": "usd",
       "line_items[0][price_data][unit_amount]": String(price * 100),
-      "line_items[0][price_data][product_data][name]": `NFT23D Print - ${size} ${label}`,
-      "line_items[0][price_data][product_data][description]": `3D printed NFT collectible (${collection || "Custom"})`,
+      "line_items[0][price_data][product_data][name]": `Sloan Craft Print - ${size} ${label}`,
+      "line_items[0][price_data][product_data][description]": `Hand-finished 3D print (${collection || "Custom"})`,
       "line_items[0][quantity]": "1",
       "metadata[customer_name]": name || "",
       "metadata[collection]": collection || "",
