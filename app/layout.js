@@ -1,6 +1,22 @@
 export const metadata = {
-  title: 'NFT23D — Turn Any NFT Into a 3D Printed Collectible',
-  description: 'Upload your NFT from any collection. We convert it to a 3D model, print it on pro-grade printers, and ship it to your door.',
+  metadataBase: new URL('https://sloancraft.com'),
+  title: 'Sloan Craft — 3D Prints by Elliot Sloan',
+  description: 'Custom collectible sculptures and miniature replicas of the ramps that built skateboarding — designed, printed, and hand-painted in Vista, California.',
+  openGraph: {
+    title: 'Sloan Craft — 3D Prints by Elliot Sloan',
+    description: 'Scaled replicas of iconic skate ramps and custom collectible sculptures, made in-house in Vista, California.',
+    url: 'https://sloancraft.com',
+    siteName: 'Sloan Craft',
+    images: [{ url: '/images/mega-park.jpg', width: 1400, height: 1050, alt: 'Sloan Craft 3D printed ramp' }],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sloan Craft — 3D Prints by Elliot Sloan',
+    description: 'Scaled replicas of iconic skate ramps and custom collectible sculptures, made in-house in Vista, California.',
+    images: ['/images/mega-park.jpg'],
+  },
 }
 
 export default function RootLayout({ children }) {

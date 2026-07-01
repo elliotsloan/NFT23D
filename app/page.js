@@ -2,102 +2,56 @@
 import { useState, useEffect, useRef } from "react";
 
 /*
-  NFT23D.COM  -  Turn Any NFT Into a 3D Collectible
-  Featured Launch Collection: Bear Champ by JC Rivera
+  SLOANCRAFT.COM — 3D Prints by Elliot Sloan
+  - Ramp Catalog (unpainted prints, 3 sizes each)
+  - Gallery (past work / capability samples — route to custom)
+  - Custom Piece requests (hand painted, 6"-12")
+  Order + payment engine (/api/order, /api/checkout, /api/validate-code,
+  PayPal / Venmo / XRP / ETH) carried over from the previous build.
 
-  HOW TO ADD YOUR PHOTOS:
-  1. Upload images to the public/images/ folder in your GitHub repo
-  2. Replace src="/images/DSCF5393.JPG" with your real filenames
-  3. Commit  Vercel auto-deploys in ~60 seconds
-
-  IMAGE NAMES USED IN THIS FILE (upload these to public/images/):
-  - hero-print.jpg ............ Your best 3D print photo (main hero)
-  - hero-nft.jpg .............. The original NFT image
-  - hero-result.jpg ........... Close-up of finished print
-  - bear-champ-collection.jpg . Bear Champ collection showcase
-  - daf-collection.jpg ........ Dead As Fuck collection showcase
+  Images live in public/images/. Logo: sloancraft_logo_transparent.svg
 */
 
-const PRICING = [
-  { size: '6"', price: 300, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks" },
-  { size: '8"', price: 350, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks" },
-  { size: '10"', price: 400, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks" },
-  { size: '12"', price: 450, label: "Hand Painted", desc: "Full color detail", time: "~2 weeks" },
+/* ---------- Theme ---------- */
+const RED = "#E01B1B", RED2 = "#b71414";
+const INK = "#0b0b0b", INK2 = "#161616";
+const CREAM = "#f2f2f2", DIM = "#bdbdbd", MUTE = "#7d7d7d";
+const LINE = "rgba(255,255,255,0.10)";
+
+/* ---------- Data ---------- */
+const RAMP_SIZES = [
+  { size: "Small", label: "Desk display", price: 50 },
+  { size: "Mid", label: "", price: 100 },
+  { size: "Full", label: "Tech deck size", price: 180 },
 ];
 
-const COLLECTIONS = [
-  { name: "Bear Champ", artist: "JC Rivera", status: "LIVE", accent: "#F5C518", img: "/images/B champ logo.webp", link: "https://xrp.cafe/collection/bearchamp" },
-  { name: "Dead As Fuck", artist: "JC Rivera", status: "LIVE", accent: "#E53E3E", img: "/images/DAF LOGO.webp", link: "https://xrp.cafe/collection/bearchampdaf" },
-  { name: "Bored Ape Yacht Club", artist: "Yuga Labs", status: "LIVE", accent: "#FFD700", img: "/images/BAYC Logo.jpg", link: "https://opensea.io/collection/boredapeyachtclub" },
-  { name: "Your Collection", artist: "Apply below", status: "COMING SOON", accent: "#6366f1", img: null },
+const CUSTOM_SIZES = [
+  { size: '6"', label: "Hand Painted", price: 300 },
+  { size: '8"', label: "Hand Painted", price: 350 },
+  { size: '10"', label: "Hand Painted", price: 400 },
+  { size: '12"', label: "Hand Painted", price: 450 },
 ];
 
-const GALLERY_PHOTOS = [
-  "/images/BAYC Hero shot.jpg",
-  "/images/Sailor BAYC.jpg",
-  "/images/IMG_1312.jpeg",
-  "/images/IMG_1640.jpeg",
-  "/images/IMG_1227.jpg",
-  "/images/DSCF5404.JPG",
-  "/images/b champ painted.jpeg",
-  "/images/green daf.jpeg",
-  "/images/IMG_0718.jpeg",
-  "/images/DSCF5393.JPG",
-  "/images/DSCF5397.JPG",
+const RAMPS = [
+  { slug: "animal-chin", name: "Animal Chin Ramp", img: "/images/animal-chin.jpg", thumbs: ["/images/animal-chin.jpg", "/images/animal-chin-2.jpg", "/images/animal-chin-3.jpg"], desc: "A scaled tribute to the legendary ramp from the Bones Brigade era — the one every skate kid wanted to find. Printed and finished with the details that made it iconic." },
+  { slug: "monster-dc", name: "Monster x DC Ramp", img: "/images/monster-dc.jpg", thumbs: ["/images/monster-dc.jpg", "/images/monster-dc-2.jpg", "/images/monster-dc-3.jpg"], desc: "A miniature of the Monster x DC ramp build — bold branding, big transitions, rendered down to a collectible you can put on your desk." },
+  { slug: "mega-park", name: "Sloanyard Mega Park", img: "/images/mega-park.jpg", thumbs: ["/images/mega-park.jpg", "/images/mega-park-2.jpg", "/images/mega-park-3.jpg"], desc: "My own backyard mega setup in Vista, scaled down. The park that's hosted the X Games — now a piece you can hold." },
+  { slug: "vert-ramp", name: "Sloanyard Vert Ramp", img: "/images/vert-ramp.jpg", thumbs: ["/images/vert-ramp.jpg", "/images/vert-ramp-2.jpg"], desc: "The Sloanyard vert ramp, replicated in miniature. Clean coping, true transitions, scaled to your shelf." },
 ];
 
-function PhotoGallery({ startIndex = 0, onClose }) {
-  const [idx, setIdx] = useState(startIndex);
-  const touchStartX = useRef(0);
-  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
-  const handleTouchEnd = (e) => {
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (diff > 50) setIdx(i => Math.min(i + 1, GALLERY_PHOTOS.length - 1));
-    if (diff < -50) setIdx(i => Math.max(i - 1, 0));
-  };
-  return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.95)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
-      <div style={{ position: "absolute", top: "16px", right: "20px", color: "#fff", fontSize: "28px", cursor: "pointer", zIndex: 10 }} onClick={onClose}>X</div>
-      <div onClick={e => e.stopPropagation()} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ width: "100%", maxWidth: "600px", maxHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px" }}>
-        <img src={GALLERY_PHOTOS[idx]} alt={"Photo " + (idx+1)} style={{ maxWidth: "100%", maxHeight: "80vh", objectFit: "contain", borderRadius: "8px" }} />
-      </div>
-      <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-        {GALLERY_PHOTOS.map((_, i) => (
-          <div key={i} onClick={(e) => { e.stopPropagation(); setIdx(i); }} style={{ width: "10px", height: "10px", borderRadius: "50%", background: i === idx ? "#a855f7" : "rgba(255,255,255,0.3)", cursor: "pointer" }} />
-        ))}
-      </div>
-      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", marginTop: "8px", fontFamily: "'DM Mono', monospace" }}>{idx+1} / {GALLERY_PHOTOS.length} &mdash; Swipe or tap dots</div>
-    </div>
-  );
-}
+const GALLERY = [
+  { id: "bayc", name: "Bored Ape Yacht Club", tag: "NFT print", photos: ["/images/gal-bayc-1.jpg", "/images/gal-bayc-2.jpg", "/images/gal-bayc-3.jpg"] },
+  { id: "mutant", name: "Mutant Ape", tag: "NFT print", photos: ["/images/gal-mutant-ape.jpg"] },
+  { id: "bchamp", name: "Bear Champ", tag: "NFT print", photos: ["/images/gal-bchamp-1.jpg", "/images/gal-bchamp-2.jpg", "/images/gal-bchamp-3.jpg", "/images/gal-bchamp-4.jpg", "/images/gal-bchamp-5.jpg"] },
+  { id: "daf", name: "Dead As Fuck", tag: "NFT print", photos: ["/images/gal-daf-1.jpg", "/images/gal-daf-2.jpg"] },
+  { id: "hawk", name: "Tony Hawk Skull", tag: "Custom sculpture", photos: ["/images/gal-hawk-skull-1.jpg", "/images/gal-hawk-skull-2.jpg", "/images/gal-hawk-skull-3.jpg", "/images/gal-hawk-skull-4.jpg", "/images/gal-hawk-skull-5.jpg"] },
+  { id: "mcgill", name: "Mike McGill Skull", tag: "Custom sculpture", photos: ["/images/gal-mcgill-skull-1.jpg", "/images/gal-mcgill-skull-2.jpg", "/images/gal-mcgill-skull-3.jpg"] },
+  { id: "cab", name: "Steve Cab Dragon", tag: "Custom sculpture", photos: ["/images/gal-cab-dragon-1.jpg", "/images/gal-cab-dragon-2.jpg", "/images/gal-cab-dragon-3.jpg", "/images/gal-cab-dragon-4.jpg"] },
+];
 
-/* Image Component  shows real image if src provided, placeholder if not */
-function SiteImage({ src, label, width = "100%", height = "280px", style = {} }) {
-  if (src) {
-    return (
-      <img src={src} alt={label || ""} style={{ width, height, borderRadius: "12px", objectFit: "contain", display: "block", ...style, }} />
-    );
-  }
-  return (
-    <div style={{ width, height, borderRadius: "12px", background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 100%)", border: "1px dashed rgba(255,255,255,0.1)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", ...style, }}>
-      <div style={{ marginBottom: "8px" }}><PictureFrameIcon size={32} opacity={0.3} /></div>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(255,255,255,0.2)", letterSpacing: "1.5px", textTransform: "uppercase", textAlign: "center", padding: "0 12px", }}>{label}</div>
-      <div style={{ position: "absolute", bottom: "8px", right: "10px", fontFamily: "'DM Mono', monospace", fontSize: "8px", color: "rgba(255,255,255,0.1)", letterSpacing: "1px", }}>UPLOAD TO /images/</div>
-    </div>
-  );
-}
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-/* Ambient Effects */
-function PictureFrameIcon({ size = 32, opacity = 0.3 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity, color: "#fff" }}>
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M3 16l5-5 4 4 4-4 5 5" />
-      <circle cx="15" cy="8" r="1.5" />
-    </svg>
-  );
-}
-
+/* ---------- Small UI ---------- */
 function CheckIcon({ size = 48 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ margin: "0 auto" }}>
@@ -106,372 +60,239 @@ function CheckIcon({ size = 48 }) {
     </svg>
   );
 }
-
 function GrainOverlay() {
-  return <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999, opacity: 0.03, mixBlendMode: "overlay", background: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, }} />;
+  return <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999, opacity: 0.03, mixBlendMode: "overlay", background: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />;
 }
-
 function Glow({ color, x, y, size = 300, opacity = 0.06 }) {
-  return <div style={{ position: "absolute", left: x, top: y, width: size, height: size, borderRadius: "50%", background: `radial-gradient(circle, ${color} 0%, transparent 70%)`, opacity, pointerEvents: "none", filter: "blur(30px)", }} />;
+  return <div style={{ position: "absolute", left: x, top: y, width: size, height: size, borderRadius: "50%", background: `radial-gradient(circle, ${color} 0%, transparent 70%)`, opacity, pointerEvents: "none", filter: "blur(30px)" }} />;
 }
 
-function GridBg() {
-  return <div style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.02, backgroundImage: `
-    linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-  `, backgroundSize: "60px 60px", }} />;
-}
-
-/* Navigation */
-function Nav({ onOrderClick }) {
+/* ---------- Header ---------- */
+function Nav({ go, route }) {
+  const link = (name, label) => (
+    <span onClick={() => go(name)} style={{ fontFamily: "'Archivo', sans-serif", fontSize: "14px", fontWeight: 600, color: route === name ? CREAM : DIM, cursor: "pointer", transition: "color .2s" }}
+      onMouseEnter={e => e.currentTarget.style.color = CREAM} onMouseLeave={e => e.currentTarget.style.color = route === name ? CREAM : DIM}>{label}</span>
+  );
   return (
-    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "16px 28px", background: "rgba(8,8,12,0.85)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center", }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <div style={{ width: "28px", height: "28px", borderRadius: "6px", background: "linear-gradient(135deg, #6366f1, #a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: 700, }}>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: "11px", color: "#fff" }}>3D</span>
-        </div>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px", color: "#fff", letterSpacing: "0.5px", }}>
-          NFT<span style={{ color: "#a855f7" }}>2</span>3D
-        </span>
+    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "12px 24px", background: "rgba(11,11,11,0.9)", backdropFilter: "blur(14px)", borderBottom: `1px solid ${LINE}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
+      <div onClick={() => go("home")} style={{ display: "flex", alignItems: "center", gap: "13px", cursor: "pointer" }}>
+        <img src="/images/sloancraft_logo_transparent.svg" alt="Sloan Craft" style={{ height: "34px", width: "auto", display: "block" }} />
+        <span className="tagline-hide" style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "1.5px", color: MUTE, textTransform: "uppercase", paddingLeft: "13px", borderLeft: `1px solid ${LINE}` }}>3D prints by Elliot Sloan</span>
       </div>
-      <button onClick={onOrderClick} style={{ fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontWeight: 600, padding: "8px 20px", background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer", transition: "all 0.3s ease", letterSpacing: "0.5px", }}
-        onMouseEnter={e => e.target.style.opacity = "0.85"}
-        onMouseLeave={e => e.target.style.opacity = "1"}
-      >Order a Print</button>
+      <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+        <div className="nav-links" style={{ display: "flex", gap: "22px", alignItems: "center" }}>
+          {link("catalog", "Ramp Catalog")}
+          {link("gallery", "Gallery")}
+          {link("about", "About")}
+        </div>
+        <button onClick={() => go("custom")} style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "13px", padding: "10px 18px", background: RED, color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", whiteSpace: "nowrap", transition: "background .2s" }}
+          onMouseEnter={e => e.currentTarget.style.background = RED2} onMouseLeave={e => e.currentTarget.style.background = RED}>Request a Custom Piece</button>
+      </div>
     </nav>
   );
 }
 
-/* Hero */
-function Hero({ onOrderClick, onPhotoClick }) {
+/* ---------- Home ---------- */
+function Home({ go }) {
   const [v, setV] = useState(false);
-  useEffect(() => { setTimeout(() => setV(true), 150); }, []);
+  useEffect(() => { setTimeout(() => setV(true), 120); }, []);
   return (
-    <section style={{ minHeight: "100vh", position: "relative", overflow: "hidden", padding: "120px 20px 16px", background: "linear-gradient(160deg, #08080c 0%, #0c0818 40%, #10081a 60%, #08080c 100%)", }}>
-      <GridBg />
-      <Glow color="#6366f1" x="10%" y="20%" size={400} opacity={0.07} />
-      <Glow color="#a855f7" x="65%" y="55%" size={350} opacity={0.05} />
-      <Glow color="#F5C518" x="80%" y="15%" size={200} opacity={0.04} />
-      <div style={{ maxWidth: "1100px", width: "100%", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px", alignItems: "center", position: "relative", zIndex: 1, }}>
-        {/* Left: Text */}
-        <div style={{ opacity: v ? 1 : 0, transform: v ? "translateY(0)" : "translateY(40px)", transition: "all 1.1s cubic-bezier(0.16, 1, 0.3, 1)", }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "5px 14px", borderRadius: "100px", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)", marginBottom: "24px", }}>
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px #22c55e" }} />
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#a5b4fc", letterSpacing: "1px", textTransform: "uppercase", }}>Now accepting orders</span>
+    <div>
+      <section style={{ padding: "132px 20px 72px", position: "relative", overflow: "hidden", background: `radial-gradient(1000px 520px at 78% -8%, rgba(224,27,27,0.18), transparent 60%), ${INK}` }}>
+        <div style={{ maxWidth: "1120px", margin: "0 auto", position: "relative", zIndex: 1, opacity: v ? 1 : 0, transform: v ? "translateY(0)" : "translateY(30px)", transition: "all 1s cubic-bezier(0.16,1,0.3,1)" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", background: "rgba(224,27,27,0.08)", border: "1px solid rgba(224,27,27,0.3)", marginBottom: "26px" }}>
+            <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#37d67a", boxShadow: "0 0 8px #37d67a" }} />
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: RED, letterSpacing: "2px", textTransform: "uppercase" }}>Now taking orders · Vista, California</span>
           </div>
-          <h1 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 5.5vw, 64px)", lineHeight: 1.05, color: "#fff", margin: "0 0 20px", }}>
-            Turn your NFT into a{" "}
-            <span style={{ background: "linear-gradient(135deg, #6366f1, #a855f7, #ec4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", }}>3D printed collectible</span>
-          </h1>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "clamp(13px, 1.5vw, 15px)", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, maxWidth: "440px", margin: "0 0 36px", }}>
-            Upload your NFT from any collection. We convert it to a 3D model, print it on pro-grade Bambu Lab printers, and ship it to your door.
+          <img src="/images/sloancraft_logo_transparent.svg" alt="Sloan Craft" style={{ width: "min(620px, 90%)", height: "auto", display: "block", margin: "0 0 6px -4px", filter: "drop-shadow(0 6px 30px rgba(224,27,27,0.25))" }} />
+          <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(18px,2.4vw,26px)", letterSpacing: "1px", color: RED, textTransform: "uppercase", margin: "12px 0 22px" }}>3D Prints by Elliot Sloan</div>
+          <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "clamp(15px,1.6vw,18px)", lineHeight: 1.65, color: DIM, maxWidth: "560px", marginBottom: "34px" }}>
+            Custom collectible sculptures and miniature replicas of the ramps that built skateboarding — designed, printed, and hand-painted in Vista, California.
           </p>
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <button onClick={onOrderClick} style={{ fontFamily: "'Outfit', sans-serif", fontSize: "15px", fontWeight: 600, padding: "16px 36px", background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", transition: "all 0.3s ease", boxShadow: "0 4px 24px rgba(99,102,241,0.3)", }}
-              onMouseEnter={e => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 8px 32px rgba(99,102,241,0.4)"; }}
-              onMouseLeave={e => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = "0 4px 24px rgba(99,102,241,0.3)"; }}
-            >Start Your Order</button>
-            <button onClick={() => document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })} style={{ fontFamily: "'Outfit', sans-serif", fontSize: "15px", fontWeight: 500, padding: "16px 28px", background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", cursor: "pointer", transition: "all 0.3s ease", }}
-              onMouseEnter={e => e.target.style.borderColor = "rgba(255,255,255,0.2)"}
-              onMouseLeave={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
-            >How It Works</button>
-          </div>
-          <div style={{ display: "flex", gap: "36px", marginTop: "48px" }}>
-            {[
-              { val: "Any NFT", label: "Collection" },
-              { val: "$300", label: "Starting At" },
-            ].map((s, i) => (
-              <div key={i} style={{ opacity: v ? 1 : 0, transition: `all 0.7s ${0.5 + i * 0.12}s ease` }}>
-                <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "20px", color: "#fff" }}>{s.val}</div>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(255,255,255,0.25)", letterSpacing: "1.5px", textTransform: "uppercase", marginTop: "2px", }}>{s.label}</div>
-              </div>
-            ))}
+          <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+            <button onClick={() => go("catalog")} style={btn(RED, "#fff")}>Shop Prints</button>
+            <button onClick={() => go("custom")} style={btnGhost()}>Request a Custom Piece</button>
           </div>
         </div>
-        {/* Hero Photo */}
-        <div onClick={() => onPhotoClick && onPhotoClick(0)} style={{ cursor: "pointer", borderRadius: "16px", overflow: "hidden", maxWidth: "500px", alignSelf: "center", justifySelf: "center" }}>
-          <img src="/images/BAYC Hero shot.jpg" alt="BAYC Hand Painted 3D Print" style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px" }} />
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", marginTop: "8px" }}>Tap to view gallery</div>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", textAlign: "center", marginTop: "6px" }}>3D model shown above is 10&quot; hand painted</div>
+      </section>
+
+      <section style={{ padding: "76px 20px", borderTop: `1px solid ${LINE}` }}>
+        <div style={{ maxWidth: "1120px", margin: "0 auto" }}>
+          <div style={eyebrow()}>Two ways in</div>
+          <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "22px" }}>
+            <div onClick={() => go("catalog")} style={pathCard()} onMouseEnter={hoverLift} onMouseLeave={unLift}>
+              <h3 style={pathH()}>Shop the Catalog</h3>
+              <p style={pathP()}>Ready-to-ship prints, including the inaugural Ramp Series — scaled replicas of iconic ramps and my own backyard setup at the Sloanyard. Pick your size, we ship it.</p>
+              <span style={{ fontWeight: 700, color: RED, fontSize: "14px" }}>Browse the Ramp Catalog →</span>
+            </div>
+            <div onClick={() => go("custom")} style={pathCard()} onMouseEnter={hoverLift} onMouseLeave={unLift}>
+              <h3 style={pathH()}>Request a Custom Piece</h3>
+              <p style={pathP()}>Want something specific? Send a reference and a few details and I'll quote a one-off build — collectibles, your own ramp, whatever you've got in mind. Hand-painted to order.</p>
+              <span style={{ fontWeight: 700, color: RED, fontSize: "14px" }}>Start a custom request →</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section style={{ padding: "76px 20px", borderTop: `1px solid ${LINE}`, background: INK2 }}>
+        <div style={{ maxWidth: "820px", margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(30px,5vw,52px)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "22px" }}>No factory. No warehouse. Just me.</h2>
+          <p style={{ color: DIM, fontSize: "17px", lineHeight: 1.75 }}>Every piece is printed and finished in-house in Vista, California. No mass production, no overseas warehouse — just a skater with a 3D printer and an obsession with getting the details right. When you order, it's me making it.</p>
+        </div>
+      </section>
+    </div>
   );
 }
 
-/* Featured Collections */
-function FeaturedCollections({ onPhotoClick, onApplyClick }) {
+/* ---------- Catalog ---------- */
+function Catalog({ go }) {
   return (
-    <section style={{ padding: "24px 20px 48px", position: "relative", overflow: "hidden", background: "linear-gradient(180deg, #08080c, #0a0610, #08080c)", }}>
-      <Glow color="#F5C518" x="5%" y="30%" size={300} opacity={0.04} />
-      <Glow color="#E53E3E" x="70%" y="60%" size={250} opacity={0.03} />
-      <div style={{ maxWidth: "1000px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <div style={{ textAlign: "center", marginBottom: "56px" }}>
-          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase", }}>Launch Collections</span>
-          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(28px, 4vw, 44px)", color: "#fff", marginTop: "10px", }}>Featured Collections</h2>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px", maxWidth: "500px", margin: "8px auto 0", }}>
-            Launching with JC Rivera's Bear Champ universe. More collections coming soon.
-          </p>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
-          {COLLECTIONS.map((col, i) => (
-            <div key={i}
-              onClick={() => { if (col.name === "Your Collection" && onApplyClick) onApplyClick(); else if (col.link) window.open(col.link, '_blank'); }}
-              style={{
-                background: "rgba(255,255,255,0.02)",
-                border: `1px solid ${col.status === "LIVE" ? `${col.accent}22` : "rgba(255,255,255,0.04)"}`,
-                borderRadius: "16px",
-                overflow: "hidden",
-                transition: "all 0.4s ease",
-                cursor: col.name === "Your Collection" ? "pointer" : "default",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.borderColor = `${col.accent}44`; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = col.status === "LIVE" ? `${col.accent}22` : "rgba(255,255,255,0.04)"; }}
-            >
-              <div onClick={(e) => { if (col.img && GALLERY_PHOTOS.includes(col.img)) { e.stopPropagation(); onPhotoClick(0); } }} style={{ cursor: col.img ? "pointer" : "default" }}>
-                <SiteImage src={col.img} label={col.status === "LIVE" ? `${col.name} collection artwork` : "Your NFT collection here"} height="280px" style={{ borderRadius: 0, border: "none" }} />
-              </div>
-              <div style={{ padding: "20px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "18px", color: "#fff", margin: 0 }}>{col.name}</h3>
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "9px", letterSpacing: "1.5px", padding: "3px 10px", borderRadius: "100px", background: col.status === "LIVE" ? `${col.accent}18` : "rgba(255,255,255,0.04)", color: col.status === "LIVE" ? col.accent : "rgba(255,255,255,0.25)", border: `1px solid ${col.status === "LIVE" ? `${col.accent}33` : "rgba(255,255,255,0.06)"}`, }}>{col.status}</span>
-                </div>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>
-                  {col.name === "Your Collection" ? (
-                    <span style={{ color: "#a5b4fc", cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); if (onApplyClick) onApplyClick(); }}>Click to apply &rarr;</span>
-                  ) : (
-                    <>by {col.artist}</>
-                  )}
-                </div>
-                {col.link && <a href={col.link} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: col.accent, textDecoration: "none", marginTop: "6px", display: "inline-block", opacity: 0.8 }}>View Collection &rarr;</a>}
-              </div>
-            </div>
-          ))}
-        </div>
+    <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "104px 24px 0" }}>
+      <div style={{ padding: "0 0 20px" }}>
+        <div style={eyebrow()}>The Ramp Series</div>
+        <h2 style={pageH()}>Ramp Catalog</h2>
+        <p style={{ color: DIM, fontSize: "16px", lineHeight: 1.6, maxWidth: "620px", marginTop: "14px" }}>Scaled, hand-finished replicas of the ramps that shaped skateboarding — plus my own backyard setup. Three sizes each. Click any ramp to pick a size.</p>
       </div>
-    </section>
-  );
-}
-
-/* Collection Apply Modal */
-function CollectionApplyModal({ onClose }) {
-  const [form, setForm] = useState({ name: "", email: "", projectLink: "", description: "" });
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  const canSubmit = form.projectLink && form.email && !submitting;
-
-  const handleSubmit = async () => {
-    if (!canSubmit) return;
-    setSubmitting(true);
-    try {
-      const res = await fetch("/api/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const result = await res.json();
-      if (result.success) {
-        setSubmitted(true);
-      } else {
-        alert("Something went wrong. Please try again.");
-      }
-    } catch (err) {
-      alert("Something went wrong. Please try again.");
-    }
-    setSubmitting(false);
-  };
-
-  const labelStyle = {
-    fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "2px",
-    color: "rgba(255,255,255,0.3)", textTransform: "uppercase", display: "block", marginBottom: "8px",
-  };
-  const inputStyle = {
-    width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.02)",
-    border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", color: "#fff",
-    fontFamily: "'DM Mono', monospace", fontSize: "13px", outline: "none",
-    transition: "border 0.2s ease", boxSizing: "border-box",
-  };
-
-  return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto", background: "linear-gradient(160deg, #111118, #0c0818)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: "20px", padding: "40px 32px", position: "relative", }}>
-        {/* Close button */}
-        <div onClick={onClose} style={{ position: "absolute", top: "16px", right: "20px", color: "rgba(255,255,255,0.4)", fontSize: "20px", cursor: "pointer", transition: "color 0.2s ease", }}
-          onMouseEnter={e => e.currentTarget.style.color = "#fff"}
-          onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
-        >&#10005;</div>
-
-        {submitted ? (
-          <div style={{ textAlign: "center", padding: "20px 0" }}>
-            <CheckIcon size={48} />
-            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "24px", color: "#fff", margin: "16px 0 12px", }}>Application Submitted!</h3>
-            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, }}>
-              Thanks for your interest! We'll review your project and get back to you soon.
-            </p>
-            <button onClick={onClose} style={{ marginTop: "24px", fontFamily: "'Outfit', sans-serif", fontSize: "14px", fontWeight: 600, padding: "12px 28px", background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", }}>Close</button>
+      <div className="card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "22px", padding: "24px 0 80px" }}>
+        {RAMPS.map(r => (
+          <div key={r.slug} onClick={() => go("product", r.slug)} style={card()} onMouseEnter={cardHover} onMouseLeave={cardUn}>
+            <div style={thumb()}><img src={r.img} alt={r.name} loading="lazy" style={imgCover()} /></div>
+            <div style={{ padding: "18px 20px" }}>
+              <h3 style={cardH()}>{r.name}</h3>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12.5px", color: RED }}>From $50</div>
+              <div style={{ fontSize: "13px", color: MUTE, marginTop: "4px" }}>3 sizes · unpainted print</div>
+            </div>
           </div>
-        ) : (
-          <>
-            <div style={{ textAlign: "center", marginBottom: "32px" }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase", }}>Partner With Us</span>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "24px", color: "#fff", marginTop: "10px", }}>Submit Your Collection</h3>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.3)", marginTop: "8px", lineHeight: 1.7, }}>
-                Share your NFT project and we'll explore bringing it to life as 3D printed collectibles.
-              </p>
-            </div>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label style={labelStyle}>Project Link *</label>
-              <input
-                placeholder="https://opensea.io/collection/your-project"
-                value={form.projectLink}
-                onChange={e => setForm({ ...form, projectLink: e.target.value })}
-                style={inputStyle}
-                onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
-                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
-              />
-            </div>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label style={labelStyle}>Your Email *</label>
-              <input
-                type="email"
-                placeholder="you@email.com"
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })}
-                style={inputStyle}
-                onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
-                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
-              />
-            </div>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label style={labelStyle}>Your Name (optional)</label>
-              <input
-                placeholder="Name"
-                value={form.name}
-                onChange={e => setForm({ ...form, name: e.target.value })}
-                style={inputStyle}
-                onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
-                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
-              />
-            </div>
-
-            <div style={{ marginBottom: "28px" }}>
-              <label style={labelStyle}>Tell us about your project (optional)</label>
-              <textarea
-                placeholder="Collection size, blockchain, community size, etc."
-                value={form.description}
-                rows={3}
-                onChange={e => setForm({ ...form, description: e.target.value })}
-                style={{ ...inputStyle, resize: "vertical" }}
-                onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
-                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
-              />
-            </div>
-
-            <button onClick={handleSubmit} disabled={!canSubmit} style={{
-              width: "100%", padding: "16px", fontFamily: "'Outfit', sans-serif", fontWeight: 700,
-              fontSize: "15px", letterSpacing: "0.5px",
-              background: canSubmit ? "linear-gradient(135deg, #6366f1, #a855f7)" : "rgba(255,255,255,0.03)",
-              color: canSubmit ? "#fff" : "rgba(255,255,255,0.12)", border: "none", borderRadius: "10px",
-              cursor: canSubmit ? "pointer" : "not-allowed", transition: "all 0.3s ease",
-              boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none",
-            }}>
-              {submitting ? "Submitting..." : "Submit Application"}
-            </button>
-          </>
-        )}
+        ))}
       </div>
     </div>
   );
 }
 
-/* How It Works */
-function HowItWorks() {
-  const steps = [
-    { num: "01", title: "Upload Your NFT", desc: "Drop your NFT image from any collection on any blockchain. We handle the rest." },
-    { num: "02", title: "We Build the 3D Model", desc: "Our team converts your 2D NFT into a detailed, printable 3D model using AI + manual refinement." },
-    { num: "03", title: "Choose Your Specs", desc: "Pick your size, color finish, and any custom requests. We'll match your NFT's colors to real filament." },
-    { num: "04", title: "Print, Finish & Ship", desc: "Printed on Bambu Lab pro printers, hand-finished, and shipped to your door." },
-  ];
+/* ---------- Product ---------- */
+function Product({ slug, go, startOrder }) {
+  const r = RAMPS.find(x => x.slug === slug) || RAMPS[0];
+  const [big, setBig] = useState(r.img);
+  const [sizeIdx, setSizeIdx] = useState(0);
+  useEffect(() => { setBig(r.img); setSizeIdx(0); }, [slug]);
+  const price = RAMP_SIZES[sizeIdx].price;
   return (
-    <section id="how" style={{ padding: "48px 20px", position: "relative", overflow: "hidden", background: "linear-gradient(180deg, #08080c, #0c0610, #08080c)", }}>
-      <GridBg />
-      <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <div style={{ textAlign: "center", marginBottom: "64px" }}>
-          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase", }}>The Process</span>
-          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(28px, 4vw, 44px)", color: "#fff", marginTop: "10px", }}>How It Works</h2>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
-          {steps.map((step, i) => (
-            <div key={i} style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)", borderRadius: "14px", padding: "32px 24px", transition: "all 0.4s ease", position: "relative", overflow: "hidden", }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(99,102,241,0.25)"; e.currentTarget.style.background = "rgba(99,102,241,0.03)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)"; e.currentTarget.style.background = "rgba(255,255,255,0.015)"; e.currentTarget.style.transform = "translateY(0)"; }}
-            >
-              <div style={{ position: "absolute", top: "-15px", right: "-5px", fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "80px", color: "rgba(99,102,241,0.04)", lineHeight: 1, }}>{step.num}</div>
-              <div style={{ fontSize: "28px", marginBottom: "14px" }}>{step.icon}</div>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px", color: "#fff", margin: "0 0 8px" }}>{step.title}</h3>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.35)", lineHeight: 1.7, margin: 0 }}>{step.desc}</p>
-            </div>
-          ))}
-        </div>
+    <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "104px 24px 0" }}>
+      <div style={{ padding: "0 0 6px" }}>
+        <span onClick={() => go("catalog")} style={{ fontFamily: "'DM Mono', monospace", color: MUTE, fontSize: "12px", cursor: "pointer" }}>← Back to Ramp Catalog</span>
       </div>
-    </section>
-  );
-}
-
-/* Pricing */
-function Pricing({ onOrder }) {
-  return (
-    <section style={{ padding: "48px 20px", position: "relative", overflow: "hidden", background: "linear-gradient(180deg, #08080c, #0a0614, #08080c)", }}>
-      <Glow color="#6366f1" x="50%" y="40%" size={500} opacity={0.04} />
-      <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <div style={{ textAlign: "center", marginBottom: "56px" }}>
-          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase", }}></span>
-          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 5.5vw, 56px)", color: "#fff", marginTop: "10px", }}>Free US Shipping</h2>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px", }}>Free shipping on all US orders Â· $35 international</p>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px" }}>
-          {PRICING.map((tier, i) => {
-            const pop = i === 2;
-            return (
-              <div key={i} onClick={onOrder} style={{ background: pop ? "rgba(99,102,241,0.06)" : "rgba(255,255,255,0.015)", border: pop ? "2px solid rgba(99,102,241,0.35)" : "1px solid rgba(255,255,255,0.04)", borderRadius: "14px", padding: "32px 20px", textAlign: "center", cursor: "pointer", transition: "all 0.3s ease", position: "relative", }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 16px 48px rgba(99,102,241,0.12)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-              >
-                {pop && <div style={{ position: "absolute", top: "-11px", left: "50%", transform: "translateX(-50%)", background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff", fontFamily: "'DM Mono', monospace", fontSize: "9px", fontWeight: 700, letterSpacing: "2px", padding: "4px 14px", borderRadius: "100px", textTransform: "uppercase", }}>Popular</div>}
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#F5C518", marginBottom: "6px" }}>{tier.size} {tier.label}</div>
-                <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "42px", color: "#fff", lineHeight: 1 }}>${tier.price}</div>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", marginTop: "6px" }}>{tier.desc}</div>
-                
+      <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "44px", padding: "24px 0 90px", alignItems: "start" }}>
+        <div>
+          <div style={{ aspectRatio: "4/3", background: "#111", border: `1px solid ${LINE}`, borderRadius: "18px", overflow: "hidden" }}>
+            <img src={big} alt={r.name} style={imgCover()} />
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "12px", marginTop: "12px" }}>
+            {r.thumbs.map((t, i) => (
+              <div key={i} onClick={() => setBig(t)} style={{ aspectRatio: "1/1", background: "#111", border: `1px solid ${big === t ? RED : LINE}`, borderRadius: "12px", overflow: "hidden", cursor: "pointer" }}>
+                <img src={t} alt="" style={imgCover()} />
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-        <div style={{ textAlign: "center", marginTop: "56px", fontFamily: "'DM Mono', monospace", fontSize: "18px", color: "rgba(255,255,255,0.3)", }}>
-          Custom sizes and bulk orders available  reach out for a quote
+        <div>
+          <h2 style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(34px,4.5vw,50px)", textTransform: "uppercase", letterSpacing: "1px", lineHeight: 1 }}>{r.name}</h2>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", letterSpacing: "1.5px", textTransform: "uppercase", color: RED, margin: "12px 0 20px" }}>Ramp Series · collectible replica</div>
+          <p style={{ color: DIM, lineHeight: 1.7, fontSize: "15.5px", marginBottom: "28px" }}>{r.desc}</p>
+
+          <label style={fieldLabel()}>Size</label>
+          <select value={sizeIdx} onChange={e => setSizeIdx(Number(e.target.value))} style={inputStyle()}>
+            {RAMP_SIZES.map((s, i) => <option key={i} value={i}>{s.size}{s.label ? ` — ${s.label}` : ""} · ${s.price}</option>)}
+          </select>
+
+          <div style={{ display: "flex", alignItems: "baseline", gap: "12px", margin: "26px 0 20px" }}>
+            <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "46px", lineHeight: 1 }}>${price}</div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: MUTE }}>unpainted print · ships from Vista, CA</div>
+          </div>
+
+          <button onClick={() => startOrder({ name: r.name, mode: "ramp", sizes: RAMP_SIZES, initialSize: sizeIdx, image: r.img })} style={{ ...btn(RED, "#fff"), width: "100%" }}>Order this Ramp</button>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#37d67a", marginTop: "14px" }}>In production · made to order</div>
         </div>
-        <div style={{ textAlign: "center", marginTop: "16px", fontFamily: "'DM Mono', monospace", fontSize: "15px", color: "rgba(255,255,255,0.2)", }}>Please allow 3-4 weeks turnaround time for hand painted pieces</div>
       </div>
-    </section>
+    </div>
   );
 }
 
-/* Order Form */
-function OrderForm() {
-  const [size, setSize] = useState(null);
+/* ---------- Gallery ---------- */
+function GalleryView({ go }) {
+  const [items] = useState(() => shuffle(GALLERY));
+  return (
+    <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "104px 24px 0" }}>
+      <div style={{ padding: "0 0 8px" }}>
+        <div style={eyebrow()}>Portfolio</div>
+        <h2 style={pageH()}>Gallery</h2>
+        <p style={{ color: DIM, fontSize: "16px", lineHeight: 1.6, maxWidth: "620px", marginTop: "14px" }}>Past work and one-off custom builds — shown as capability samples, not catalog items.</p>
+      </div>
+      <div style={{ background: "rgba(224,27,27,0.06)", border: "1px solid rgba(224,27,27,0.25)", borderRadius: "12px", padding: "16px 20px", margin: "8px 0 34px", fontSize: "14.5px", color: DIM, lineHeight: 1.6 }}>
+        These pieces aren't for sale off the shelf. Want something like one of these? <b style={{ color: RED, cursor: "pointer" }} onClick={() => go("custom")}>Request a custom piece →</b>
+      </div>
+      <div className="card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "22px", padding: "0 0 80px" }}>
+        {items.map(g => (
+          <div key={g.id} onClick={() => go("collection", g.id)} style={card()} onMouseEnter={cardHover} onMouseLeave={cardUn}>
+            <div style={thumb()}>
+              <img src={g.photos[0]} alt={g.name} loading="lazy" style={imgCover()} />
+              {g.photos.length > 1 && <span style={{ position: "absolute", bottom: "8px", right: "8px", background: "rgba(0,0,0,0.72)", color: "#fff", fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "1px", padding: "3px 9px", borderRadius: "100px", border: `1px solid ${LINE}` }}>{g.photos.length} photos</span>}
+            </div>
+            <div style={{ padding: "18px 20px" }}>
+              <h3 style={{ ...cardH(), fontSize: "18px" }}>{g.name}</h3>
+              <div style={{ fontSize: "13px", color: MUTE, marginTop: "4px" }}>{g.tag}</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: RED, marginTop: "8px" }}>View prints →</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Collection detail ---------- */
+function Collection({ id, go, onZoom }) {
+  const g = GALLERY.find(x => x.id === id) || GALLERY[0];
+  return (
+    <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "104px 24px 0" }}>
+      <div style={{ padding: "0 0 14px" }}>
+        <span onClick={() => go("gallery")} style={{ fontFamily: "'DM Mono', monospace", color: MUTE, fontSize: "12px", cursor: "pointer" }}>← Back to Gallery</span>
+        <h2 style={{ ...pageH(), marginTop: "14px" }}>{g.name}</h2>
+        <p style={{ fontFamily: "'DM Mono', monospace", color: RED, fontSize: "13px", letterSpacing: "1px", textTransform: "uppercase" }}>{g.tag} · sample of past work</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px,1fr))", gap: "16px" }}>
+        {g.photos.map((p, i) => (
+          <div key={i} onClick={() => onZoom(p)} style={{ aspectRatio: "3/4", background: "#111", border: `1px solid ${LINE}`, borderRadius: "14px", overflow: "hidden", cursor: "zoom-in" }}>
+            <img src={p} alt={g.name} loading="lazy" style={imgCover()} />
+          </div>
+        ))}
+      </div>
+      <div style={{ background: "rgba(224,27,27,0.06)", border: "1px solid rgba(224,27,27,0.25)", borderRadius: "12px", padding: "16px 20px", margin: "34px 0 80px", textAlign: "center", color: DIM }}>
+        A sample of past work — not sold off the shelf. Want one like it? <b style={{ color: RED, cursor: "pointer" }} onClick={() => go("custom")}>Request a custom piece →</b>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Order Form (shared: ramp + custom) — payment engine preserved ---------- */
+function OrderForm({ product, go }) {
+  const isCustom = product.mode === "custom";
+  const SIZES = product.sizes;
+  const [size, setSize] = useState(product.initialSize != null ? SIZES[product.initialSize] : null);
   const [fileName, setFileName] = useState("");
-  const [form, setForm] = useState({ name: "", email: "", collection: "", address: "", city: "", state: "", zip: "", country: "", notes: "" });
+  const [form, setForm] = useState({ name: "", email: "", address: "", city: "", state: "", zip: "", country: "", notes: "" });
+  const [tos, setTos] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileRef = useRef(null);
   const [discountCode, setDiscountCode] = useState("");
-  const [discountStatus, setDiscountStatus] = useState(null); // null | "valid" | "invalid" | "checking" | "used_up"
+  const [discountStatus, setDiscountStatus] = useState(null);
   const [discountPercent, setDiscountPercent] = useState(0);
   const [xrpPrice, setXrpPrice] = useState(null);
   const [ethPrice, setEthPrice] = useState(null);
+  const [stripeLoading, setStripeLoading] = useState(false);
+  const [paidWithAlt, setPaidWithAlt] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [submittedOrderId, setSubmittedOrderId] = useState(null);
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -486,35 +307,21 @@ function OrderForm() {
     const iv = setInterval(fetchPrices, 60000);
     return () => clearInterval(iv);
   }, []);
-  const canSubmit = form.name && form.email && size && !submitting;
 
-  const isInternational = form.country && form.country.trim() !== "" && !["us","usa","united states","united states of america"].includes(form.country.trim().toLowerCase());
+  const isInternational = form.country && form.country.trim() !== "" && !["us", "usa", "united states", "united states of america"].includes(form.country.trim().toLowerCase());
   const intlFee = isInternational ? 35 : 0;
+  const canSubmit = form.name && form.email && size && (!isCustom || tos) && !submitting;
 
   const applyDiscount = async () => {
     if (!discountCode.trim()) return;
     setDiscountStatus("checking");
     try {
-      const res = await fetch("/api/validate-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: discountCode.trim().toUpperCase() }),
-      });
+      const res = await fetch("/api/validate-code", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: discountCode.trim().toUpperCase() }) });
       const data = await res.json();
-      if (data.valid) {
-        setDiscountStatus("valid");
-        setDiscountPercent(data.percent);
-      } else if (data.reason === "used_up") {
-        setDiscountStatus("used_up");
-        setDiscountPercent(0);
-      } else {
-        setDiscountStatus("invalid");
-        setDiscountPercent(0);
-      }
-    } catch {
-      setDiscountStatus("invalid");
-      setDiscountPercent(0);
-    }
+      if (data.valid) { setDiscountStatus("valid"); setDiscountPercent(data.percent); }
+      else if (data.reason === "used_up") { setDiscountStatus("used_up"); setDiscountPercent(0); }
+      else { setDiscountStatus("invalid"); setDiscountPercent(0); }
+    } catch { setDiscountStatus("invalid"); setDiscountPercent(0); }
   };
 
   const discountedPrice = discountStatus === "valid" && size ? Math.round(size.price * (1 - discountPercent / 100)) : size?.price;
@@ -526,12 +333,12 @@ function OrderForm() {
       const data = new FormData();
       data.append("name", form.name);
       data.append("email", form.email);
-      data.append("collection", form.collection || "Not specified");
+      data.append("collection", isCustom ? "Custom piece" : product.name);
       data.append("address", form.address || "Not provided");
       data.append("city", form.city || "");
       data.append("state", form.state || "");
       data.append("zip", form.zip || "");
-      data.append("size", size ? size.size + " " + size.label + " - $" + (discountedPrice || size.price) : "");
+      data.append("size", (isCustom ? "Custom " : product.name + " — ") + (size ? size.size + " " + size.label + " - $" + (discountedPrice || size.price) : ""));
       data.append("notes", form.notes || "None");
       data.append("paymentMethod", paymentMethod || "Not specified");
       if (discountStatus === "valid") { data.append("discountCode", discountCode.trim().toUpperCase()); data.append("originalPrice", size.price); data.append("discountedPrice", discountedPrice); }
@@ -542,325 +349,276 @@ function OrderForm() {
       if (result.success) {
         setSubmitted(true);
         setSubmittedOrderId(result.orderId);
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            document.getElementById('order')?.scrollIntoView({ behavior: 'instant', block: 'start' });
-          });
-        });
+        requestAnimationFrame(() => requestAnimationFrame(() => { document.getElementById("order")?.scrollIntoView({ behavior: "instant", block: "start" }); }));
       } else { alert("Something went wrong. Please try again."); }
     } catch (err) { alert("Something went wrong. Please try again."); }
     setSubmitting(false);
   };
 
-  const [stripeLoading, setStripeLoading] = useState(false);
-  const [paidWithAlt, setPaidWithAlt] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [submittedOrderId, setSubmittedOrderId] = useState(null);
-
   const handleStripeCheckout = async () => {
     setStripeLoading(true);
     try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          size: size?.size,
-          label: size?.label,
-          price: size?.price,
-          name: form.name,
-          email: form.email,
-          collection: form.collection,
-          discountCode: discountStatus === "valid" ? discountCode.trim().toUpperCase() : undefined,
-        }),
-      });
+      const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ size: size?.size, label: size?.label, price: size?.price, name: form.name, email: form.email, collection: isCustom ? "Custom piece" : product.name, discountCode: discountStatus === "valid" ? discountCode.trim().toUpperCase() : undefined }) });
       const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert("Something went wrong creating checkout. Please try PayPal or Venmo.");
-      }
-    } catch (err) {
-      alert("Something went wrong. Please try PayPal or Venmo.");
-    }
+      if (data.url) { window.location.href = data.url; }
+      else { alert("Something went wrong creating checkout. Please try PayPal or Venmo."); }
+    } catch (err) { alert("Something went wrong. Please try PayPal or Venmo."); }
     setStripeLoading(false);
   };
 
   if (submitted) {
     const finalPrice = (discountedPrice || size?.price) + intlFee;
     const paypalUrl = `https://paypal.me/nft23d/${finalPrice}`;
-    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("NFT 3D Print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : "") + (submittedOrderId ? " [" + submittedOrderId + "]" : ""))}`;
+    const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("Sloan Craft print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : "") + (submittedOrderId ? " [" + submittedOrderId + "]" : ""))}`;
     const XRP_ADDRESS = "rKydygGZZhmKteEZpEWtHACoTdWZ3c1Bep";
     const xrpAmount = xrpPrice ? (finalPrice / xrpPrice).toFixed(2) : null;
-    const xrpQrUrl = xrpAmount ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`xrpl:${XRP_ADDRESS}?amount=${xrpAmount}`)}&bgcolor=08080c&color=ffffff&margin=8` : null;
+    const xrpQrUrl = xrpAmount ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`xrpl:${XRP_ADDRESS}?amount=${xrpAmount}`)}&bgcolor=0b0b0b&color=ffffff&margin=8` : null;
     const ETH_ADDRESS = "0x72F8305567cd508c38F00A8d0F7a5940d45D6e7b";
     const ethAmount = ethPrice ? (finalPrice / ethPrice).toFixed(6) : null;
-    const ethQrUrl = ethAmount ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`ethereum:${ETH_ADDRESS}?value=${ethAmount}`)}&bgcolor=08080c&color=ffffff&margin=8` : null;
+    const ethQrUrl = ethAmount ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`ethereum:${ETH_ADDRESS}?value=${ethAmount}`)}&bgcolor=0b0b0b&color=ffffff&margin=8` : null;
     return (
-      <section id="order" style={{ padding: "48px 20px", background: "#08080c", textAlign: "center", minHeight: "100vh" }}>
-        <div style={{ maxWidth: "480px", margin: "0 auto", padding: "56px 32px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "20px", }}>
+      <section id="order" style={{ padding: "120px 20px 60px", background: INK, textAlign: "center", minHeight: "100vh" }}>
+        <div style={{ maxWidth: "480px", margin: "0 auto", padding: "56px 32px", background: "rgba(224,27,27,0.05)", border: "1px solid rgba(224,27,27,0.2)", borderRadius: "20px" }}>
           <div style={{ marginBottom: "16px" }}><CheckIcon size={48} /></div>
-          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px", color: "#fff", marginBottom: "12px", }}>Order Received!</h3>
-          {submittedOrderId && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", letterSpacing: "3px", color: "rgba(255,255,255,0.25)", marginBottom: "16px", marginTop: "-4px" }}>ORDER <span style={{ color: "#a5b4fc", fontWeight: 700, fontSize: "14px" }}>{submittedOrderId}</span></div>}
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: "28px", }}>
-            Complete your payment below to lock in your {size?.size} {size?.label} print{discountStatus === "valid" ? ` at $${finalPrice}` : ""}. We'll start on your 3D model right away!
+          <h3 style={{ fontFamily: "'Anton', sans-serif", fontWeight: 400, fontSize: "30px", textTransform: "uppercase", letterSpacing: "1px", color: CREAM, marginBottom: "12px" }}>Order Received!</h3>
+          {submittedOrderId && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", letterSpacing: "3px", color: MUTE, marginBottom: "16px", marginTop: "-4px" }}>ORDER <span style={{ color: RED, fontWeight: 700, fontSize: "14px" }}>{submittedOrderId}</span></div>}
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: DIM, lineHeight: 1.8, marginBottom: "28px" }}>
+            Complete your payment below to lock in your {size?.size} {size?.label} {isCustom ? "custom piece" : product.name}{discountStatus === "valid" ? ` at $${finalPrice}` : ""}. {isCustom ? "Complex or oversized pieces may require a custom quote — I'll email you before charging." : "I'll start on it right away!"}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
-            <button onClick={handleStripeCheckout} disabled={stripeLoading} style={{ display: "block", width: "100%", padding: "16px 24px", background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "#fff", borderRadius: "10px", border: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px", cursor: stripeLoading ? "wait" : "pointer", transition: "opacity 0.2s ease", boxShadow: "0 4px 24px rgba(99,102,241,0.3)", }}
-              onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-              onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-            >{stripeLoading ? "Redirecting to checkout..." : `Pay $${finalPrice} with Card`}</button>
-            {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", textAlign: "center", marginTop: "6px" }}>&#x1f389; {discountPercent}% discount applied! (was ${size?.price})</div>}
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.15)", letterSpacing: "1px", textTransform: "uppercase", marginTop: "4px", marginBottom: "4px", }}>or pay with</div>
+            <button onClick={handleStripeCheckout} disabled={stripeLoading} style={{ display: "block", width: "100%", padding: "16px 24px", background: RED, color: "#fff", borderRadius: "10px", border: "none", fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "15px", cursor: stripeLoading ? "wait" : "pointer" }}>{stripeLoading ? "Redirecting to checkout..." : `Pay $${finalPrice} with Card`}</button>
+            {discountStatus === "valid" && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#22c55e", marginTop: "6px" }}>{discountPercent}% discount applied! (was ${size?.price})</div>}
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: MUTE, letterSpacing: "1px", textTransform: "uppercase", margin: "4px 0" }}>or pay with</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-              <a href={paypalUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt('paypal')} style={{ display: "block", padding: "14px 16px", background: "#0070ba", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease" }}
-                onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-              >PayPal</a>
-              <a href={venmoUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt('venmo')} style={{ display: "block", padding: "14px 16px", background: "#3D95CE", color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", transition: "opacity 0.2s ease" }}
-                onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-              >Venmo</a>
-              <button onClick={() => setPaidWithAlt('xrp')} style={{ display: "block", padding: "14px 16px", background: "linear-gradient(135deg, #1a1a35, #12122a)", color: "#fff", borderRadius: "10px", border: "1px solid rgba(99,102,241,0.3)", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", cursor: "pointer", transition: "opacity 0.2s ease" }}
-                onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-              >&#9889; XRP</button>
-              <button onClick={() => setPaidWithAlt('eth')} style={{ display: "block", padding: "14px 16px", background: "linear-gradient(135deg, #1a1a2e, #1e1e3a)", color: "#fff", borderRadius: "10px", border: "1px solid rgba(99,102,241,0.3)", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center", cursor: "pointer", transition: "opacity 0.2s ease" }}
-                onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-              >&#9830; ETH</button>
+              <a href={paypalUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt("paypal")} style={altPay("#0070ba")}>PayPal</a>
+              <a href={venmoUrl} target="_blank" rel="noopener noreferrer" onClick={() => setPaidWithAlt("venmo")} style={altPay("#3D95CE")}>Venmo</a>
+              <button onClick={() => setPaidWithAlt("xrp")} style={{ ...altPay(INK2), border: `1px solid ${LINE}`, cursor: "pointer" }}>XRP</button>
+              <button onClick={() => setPaidWithAlt("eth")} style={{ ...altPay(INK2), border: `1px solid ${LINE}`, cursor: "pointer" }}>ETH</button>
             </div>
           </div>
-          {(paidWithAlt === 'venmo' || paidWithAlt === 'paypal') && (
-            <div style={{ marginTop: "16px", padding: "16px 20px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: "10px", textAlign: "center" }}>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "15px", color: "#22c55e", marginBottom: "6px" }}>&#10003; {paidWithAlt === 'paypal' ? 'PayPal' : 'Venmo'} payment link opened!</p>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8 }}>Complete your payment there and you're all set. We'll email you a confirmation once payment clears and get started on your print right away.</p>
+          {(paidWithAlt === "venmo" || paidWithAlt === "paypal") && (
+            <div style={{ marginTop: "16px", padding: "16px 20px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: "10px" }}>
+              <p style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "15px", color: "#22c55e", marginBottom: "6px" }}>✓ {paidWithAlt === "paypal" ? "PayPal" : "Venmo"} payment link opened!</p>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: DIM, lineHeight: 1.8 }}>Complete your payment there and you're all set. I'll email you a confirmation once payment clears and get started on your print.</p>
             </div>
           )}
-
-          {paidWithAlt === 'xrp' && xrpQrUrl && (
-            <div style={{ marginTop: "16px", padding: "20px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "12px", textAlign: "center" }}>
+          {paidWithAlt === "xrp" && xrpQrUrl && (
+            <div style={{ marginTop: "16px", padding: "20px", background: "rgba(224,27,27,0.04)", border: "1px solid rgba(224,27,27,0.15)", borderRadius: "12px" }}>
               <img src={xrpQrUrl} alt="XRP QR Code" style={{ width: 180, height: 180, borderRadius: 8, marginBottom: 12 }} />
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px", color: "#fff", marginBottom: 2 }}>{xrpAmount} <span style={{ color: "#a5b4fc", fontSize: "16px" }}>XRP</span></p>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>${finalPrice} USD</p>
+              <p style={{ fontFamily: "'Anton', sans-serif", fontSize: "28px", color: CREAM, marginBottom: 2 }}>{xrpAmount} <span style={{ color: RED, fontSize: "16px" }}>XRP</span></p>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: DIM, marginBottom: 12 }}>${finalPrice} USD</p>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
-                <code style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#a5b4fc", background: "rgba(99,102,241,0.1)", padding: "6px 10px", borderRadius: 6, wordBreak: "break-all" }}>{XRP_ADDRESS}</code>
-                <button onClick={() => navigator.clipboard.writeText(XRP_ADDRESS)} style={{ padding: "6px 10px", background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 6, color: "#a5b4fc", cursor: "pointer", fontSize: "11px", fontFamily: "'DM Mono', monospace" }}>Copy</button>
+                <code style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: RED, background: "rgba(224,27,27,0.1)", padding: "6px 10px", borderRadius: 6, wordBreak: "break-all" }}>{XRP_ADDRESS}</code>
+                <button onClick={() => navigator.clipboard.writeText(XRP_ADDRESS)} style={{ padding: "6px 10px", background: "rgba(224,27,27,0.15)", border: "1px solid rgba(224,27,27,0.3)", borderRadius: 6, color: RED, cursor: "pointer", fontSize: "11px", fontFamily: "'DM Mono', monospace" }}>Copy</button>
               </div>
-              {submittedOrderId && <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Include order <strong style={{ color: "#a5b4fc" }}>{submittedOrderId}</strong> in the memo/tag if possible.</p>}
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", lineHeight: 1.8 }}>Open Xaman or any XRP wallet, scan the QR or paste the address, and send the exact amount above. XRPL transactions settle in seconds.</p>
+              {submittedOrderId && <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: MUTE, marginBottom: 8 }}>Include order <strong style={{ color: RED }}>{submittedOrderId}</strong> in the memo/tag if possible.</p>}
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: MUTE, lineHeight: 1.8 }}>Open Xaman or any XRP wallet, scan the QR or paste the address, and send the exact amount above.</p>
             </div>
           )}
-
-          {paidWithAlt === 'eth' && ethQrUrl && (
-            <div style={{ marginTop: "16px", padding: "20px", background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "12px", textAlign: "center" }}>
+          {paidWithAlt === "eth" && ethQrUrl && (
+            <div style={{ marginTop: "16px", padding: "20px", background: "rgba(224,27,27,0.04)", border: "1px solid rgba(224,27,27,0.15)", borderRadius: "12px" }}>
               <img src={ethQrUrl} alt="ETH QR Code" style={{ width: 180, height: 180, borderRadius: 8, marginBottom: 12 }} />
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "28px", color: "#fff", marginBottom: 2 }}>{ethAmount} <span style={{ color: "#627eea", fontSize: "16px" }}>ETH</span></p>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>${finalPrice} USD</p>
+              <p style={{ fontFamily: "'Anton', sans-serif", fontSize: "28px", color: CREAM, marginBottom: 2 }}>{ethAmount} <span style={{ color: "#627eea", fontSize: "16px" }}>ETH</span></p>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: DIM, marginBottom: 12 }}>${finalPrice} USD</p>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
                 <code style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#627eea", background: "rgba(98,126,234,0.1)", padding: "6px 10px", borderRadius: 6, wordBreak: "break-all" }}>{ETH_ADDRESS}</code>
                 <button onClick={() => navigator.clipboard.writeText(ETH_ADDRESS)} style={{ padding: "6px 10px", background: "rgba(98,126,234,0.15)", border: "1px solid rgba(98,126,234,0.3)", borderRadius: 6, color: "#627eea", cursor: "pointer", fontSize: "11px", fontFamily: "'DM Mono', monospace" }}>Copy</button>
               </div>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#f59e0b", lineHeight: 1.8, marginBottom: 8 }}>⚠️ Send only on Ethereum mainnet. Do not send over any other network or funds may be lost.</p>
-              {submittedOrderId && <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Include order <strong style={{ color: "#627eea" }}>{submittedOrderId}</strong> in the memo/data field if possible.</p>}
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.35)", lineHeight: 1.8 }}>Open MetaMask, Coinbase Wallet, or any Ethereum wallet, scan the QR or paste the address, and send the exact amount above.</p>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#f59e0b", lineHeight: 1.8, marginBottom: 8 }}>Send only on Ethereum mainnet. Do not send over any other network or funds may be lost.</p>
+              {submittedOrderId && <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: MUTE, marginBottom: 8 }}>Include order <strong style={{ color: "#627eea" }}>{submittedOrderId}</strong> in the memo/data field if possible.</p>}
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: MUTE, lineHeight: 1.8 }}>Open MetaMask, Coinbase Wallet, or any Ethereum wallet, scan the QR or paste the address, and send the exact amount above.</p>
             </div>
           )}
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.2)", lineHeight: 1.8, }}>
-            After payment, you'll get an email confirmation and a 48hr print update.
-          </p>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: MUTE, lineHeight: 1.8 }}>After payment, you'll get an email confirmation and a print update.</p>
         </div>
       </section>
     );
   }
 
-  const labelStyle = { fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "2px", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", display: "block", marginBottom: "8px", };
-  const inputStyle = { width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", color: "#fff", fontFamily: "'DM Mono', monospace", fontSize: "13px", outline: "none", transition: "border 0.2s ease", boxSizing: "border-box", };
-
   return (
-    <section id="order" style={{ padding: "48px 20px", position: "relative", overflow: "hidden", background: "linear-gradient(180deg, #08080c, #0a0610, #08080c)", }}>
-      <Glow color="#a855f7" x="80%" y="15%" size={300} opacity={0.04} />
+    <section id="order" style={{ padding: "104px 20px 60px", position: "relative", overflow: "hidden", background: INK }}>
+      <Glow color={RED} x="80%" y="10%" size={320} opacity={0.05} />
       <div style={{ maxWidth: "580px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", color: "#a855f7", textTransform: "uppercase", }}>Order Form</span>
-          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "clamp(28px, 4vw, 44px)", color: "#fff", marginTop: "10px", }}>Get Your Print</h2>
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          {!isCustom && <span onClick={() => go("product", null)} style={{ display: "inline-block", fontFamily: "'DM Mono', monospace", color: MUTE, fontSize: "12px", cursor: "pointer", marginBottom: "12px" }} />}
+          <div style={eyebrow(true)}>{isCustom ? "One-off builds" : "Order"}</div>
+          <h2 style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(30px,5vw,48px)", textTransform: "uppercase", letterSpacing: "1px", marginTop: "8px" }}>{isCustom ? "Request a Custom Piece" : product.name}</h2>
+          {isCustom && <p style={{ color: DIM, fontSize: "14px", marginTop: "12px", lineHeight: 1.6 }}>Send a reference and a few details. I'll review it and email you a quote before anything is charged.</p>}
         </div>
-        {/* Upload */}
-        <div style={{ marginBottom: "28px" }}>
-          <label style={labelStyle}>Upload Your NFT Image</label>
-          <div onClick={() => fileRef.current?.click()} style={{ border: `2px dashed ${fileName ? "rgba(99,102,241,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: "12px", padding: "40px 20px", textAlign: "center", cursor: "pointer", background: fileName ? "rgba(99,102,241,0.03)" : "transparent", transition: "all 0.3s ease", }}
-            onMouseEnter={e => { if (!fileName) e.currentTarget.style.borderColor = "rgba(99,102,241,0.3)"; }}
-            onMouseLeave={e => { if (!fileName) e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
-          >
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => setFileName(e.target.files?.[0]?.name || "")} />
-            <div style={{ marginBottom: "8px" }}>{fileName ? <CheckIcon size={28} /> : <PictureFrameIcon size={28} opacity={0.25} />}</div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: fileName ? "#a5b4fc" : "rgba(255,255,255,0.25)", }}>{fileName || "Click to upload -- PNG, JPG, SVG"}</div>
+
+        {isCustom && (
+          <div style={{ marginBottom: "24px" }}>
+            <label style={fieldLabel()}>Reference image</label>
+            <div onClick={() => fileRef.current?.click()} style={{ border: `2px dashed ${fileName ? RED : LINE}`, borderRadius: "12px", padding: "38px 20px", textAlign: "center", cursor: "pointer", background: fileName ? "rgba(224,27,27,0.04)" : "transparent" }}>
+              <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => setFileName(e.target.files?.[0]?.name || "")} />
+              <div style={{ marginBottom: "8px" }}>{fileName ? <CheckIcon size={26} /> : null}</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: fileName ? RED : MUTE }}>{fileName || "Click to upload — PNG, JPG, SVG"}</div>
+            </div>
           </div>
-        </div>
-        {/* Collection */}
-        <div style={{ marginBottom: "28px" }}>
-          <label style={labelStyle}>NFT Collection Name</label>
-          <input placeholder="e.g. Bear Champ, Bored Apes, Pudgy Penguins..." value={form.collection} onChange={e => setForm({ ...form, collection: e.target.value })} style={inputStyle}
-            onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
-            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
-          />
-        </div>
-        {/* Size */}
-        <div style={{ marginBottom: "28px" }}>
-          <label style={labelStyle}>Select Size</label>
+        )}
+
+        <div style={{ marginBottom: "24px" }}>
+          <label style={fieldLabel()}>{isCustom ? "Size (hand-painted)" : "Size"}</label>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
-            {PRICING.map((t, i) => (
-              <div key={i} onClick={() => setSize(t)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", borderRadius: "10px", cursor: "pointer", background: size?.price === t.price ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.015)", border: size?.price === t.price ? "2px solid #6366f1" : "1px solid rgba(255,255,255,0.05)", transition: "all 0.2s ease", }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#fff" }}>{t.size} {t.label}</span>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "18px", color: size?.price === t.price ? "#a5b4fc" : "rgba(255,255,255,0.4)", }}>${t.price}</span>
+            {SIZES.map((t, i) => (
+              <div key={i} onClick={() => setSize(t)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", borderRadius: "10px", cursor: "pointer", background: size?.price === t.price ? "rgba(224,27,27,0.08)" : "rgba(255,255,255,0.015)", border: size?.price === t.price ? `2px solid ${RED}` : `1px solid ${LINE}` }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: CREAM }}>{t.size}{t.label ? " " + t.label : ""}</span>
+                <span style={{ fontFamily: "'Anton', sans-serif", fontSize: "18px", color: size?.price === t.price ? RED : DIM }}>${t.price}</span>
               </div>
             ))}
           </div>
         </div>
-        {/* Contact */}
-        {[
-          { key: "name", label: "Your Name", ph: "Name" },
-          { key: "email", label: "Email Address", ph: "you@email.com" },
-          { key: "address", label: "Street Address", ph: "123 Main St" },
-        ].map(f => (
+
+        {[{ key: "name", label: "Your Name", ph: "Name" }, { key: "email", label: "Email Address", ph: "you@email.com" }, { key: "address", label: "Street Address", ph: "123 Main St" }].map(f => (
           <div key={f.key} style={{ marginBottom: "20px" }}>
-            <label style={labelStyle}>{f.label}</label>
-            <input type={f.key === "email" ? "email" : "text"} placeholder={f.ph} value={form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} style={inputStyle}
-              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
-            />
+            <label style={fieldLabel()}>{f.label}</label>
+            <input type={f.key === "email" ? "email" : "text"} placeholder={f.ph} value={form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} style={inputStyle()} />
           </div>
         ))}
-        <div style={{ display: "flex", gap: "12px", marginBottom: "28px" }}>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>City</label>
-            <input type="text" placeholder="City" value={form.city} onChange={e => setForm({...form, city: e.target.value})} style={inputStyle}
-              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.6)"}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>State</label>
-            <input type="text" placeholder="State" value={form.state} onChange={e => setForm({...form, state: e.target.value})} style={inputStyle}
-              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.6)"}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Zip Code</label>
-            <input type="text" placeholder="Zip" value={form.zip} onChange={e => setForm({...form, zip: e.target.value})} style={inputStyle}
-              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.6)"}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
-            />
-          </div>
+        <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
+          {["city", "state", "zip"].map(k => (
+            <div key={k} style={{ flex: 1 }}>
+              <label style={fieldLabel()}>{k === "zip" ? "Zip Code" : k[0].toUpperCase() + k.slice(1)}</label>
+              <input type="text" placeholder={k === "zip" ? "Zip" : k[0].toUpperCase() + k.slice(1)} value={form[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} style={inputStyle()} />
+            </div>
+          ))}
         </div>
-        <div style={{ marginBottom: "28px" }}>
-          <label style={labelStyle}>Country</label>
-          <input type="text" placeholder="US" value={form.country} onChange={e => setForm({...form, country: e.target.value})} style={inputStyle}
-              onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.6)"}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
-            />
-            {isInternational && <p style={{ color: "#f59e0b", fontSize: "13px", marginTop: "6px" }}>International shipping: +$35.00 will be added to your total.</p>}
+        <div style={{ marginBottom: "20px" }}>
+          <label style={fieldLabel()}>Country</label>
+          <input type="text" placeholder="US" value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} style={inputStyle()} />
+          {isInternational && <p style={{ color: "#f59e0b", fontSize: "13px", marginTop: "6px" }}>International shipping: +$35.00 will be added to your total.</p>}
         </div>
-        <div style={{ marginBottom: "28px" }}>
-          <label style={labelStyle}>Special Requests (optional)</label>
-          <textarea placeholder="Custom colors, finish preference (matte or gloss), etc." value={form.notes} rows={3} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...inputStyle, resize: "vertical" }}
-            onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.3)"}
-            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.06)"}
-          />
+        <div style={{ marginBottom: "24px" }}>
+          <label style={fieldLabel()}>{isCustom ? "What do you want made?" : "Special Requests (optional)"}</label>
+          <textarea placeholder={isCustom ? "Describe the piece — a specific ramp, a collectible, colors, any details..." : "Custom colors, finish preference, etc."} value={form.notes} rows={3} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...inputStyle(), resize: "vertical" }} />
         </div>
-        {/* Payment info */}
-        <div style={{ background: "rgba(99,102,241,0.03)", border: "1px solid rgba(99,102,241,0.1)", borderRadius: "12px", padding: "18px 22px", marginBottom: "28px", }}>
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "13px", color: "#a5b4fc", marginBottom: "6px", }}>Payment Methods</div>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "rgba(255,255,255,0.35)", lineHeight: 1.7, }}>
-            <span style={{ color: "#fff" }}>Card</span>{" | "}
-            <span style={{ color: "#fff" }}>PayPal</span>{" | "}
-            <span style={{ color: "#fff" }}>Venmo</span>{" | "}
-            <span style={{ color: "#fff" }}>XRP</span>{" | "}
-            <span style={{ color: "#fff" }}>ETH</span>
-            {" -- Payment options shown instantly after you submit."}
-          </div>
-        </div>
+
+        {isCustom && (
+          <>
+            <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", background: INK2, border: `1px solid ${LINE}`, borderRadius: "11px", padding: "16px 18px", marginBottom: "14px" }}>
+              <input type="checkbox" checked={tos} onChange={e => setTos(e.target.checked)} style={{ width: "18px", height: "18px", flex: "none", marginTop: "2px", accentColor: RED }} />
+              <label style={{ fontSize: "13.5px", color: DIM, lineHeight: 1.55 }} onClick={() => setTos(!tos)}>I confirm I have the rights to any images I'm submitting, and that Sloan Craft can use them to produce my custom piece.</label>
+            </div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12.5px", color: MUTE, lineHeight: 1.6, textAlign: "center", margin: "16px 0" }}>
+              <b style={{ color: RED, fontWeight: 500 }}>Complex or oversized pieces may require a custom quote — we'll email you before charging.</b>
+            </div>
+          </>
+        )}
+
         <div style={{ marginBottom: "16px" }}>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "2px", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginBottom: "10px" }}>How are you paying?</div>
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "2px", color: MUTE, textTransform: "uppercase", marginBottom: "10px" }}>How are you paying?</div>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             {["Stripe / Card", "PayPal", "Venmo", "XRP", "ETH"].map(method => (
-              <button key={method} type="button" onClick={() => setPaymentMethod(method)} style={{ flex: 1, padding: "10px 6px", fontFamily: "'DM Mono', monospace", fontSize: "11px", borderRadius: "8px", border: paymentMethod === method ? "1px solid rgba(99,102,241,0.8)" : "1px solid rgba(255,255,255,0.1)", background: paymentMethod === method ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.03)", color: paymentMethod === method ? "#a5b4fc" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.2s" }}>{method}</button>
+              <button key={method} type="button" onClick={() => setPaymentMethod(method)} style={{ flex: 1, minWidth: "60px", padding: "10px 6px", fontFamily: "'DM Mono', monospace", fontSize: "11px", borderRadius: "8px", border: paymentMethod === method ? `1px solid ${RED}` : `1px solid ${LINE}`, background: paymentMethod === method ? "rgba(224,27,27,0.12)" : "rgba(255,255,255,0.03)", color: paymentMethod === method ? RED : MUTE, cursor: "pointer" }}>{method}</button>
             ))}
           </div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: MUTE, marginTop: "8px", textAlign: "center" }}>Payment options shown instantly after you submit.</div>
         </div>
-        <button onClick={handleSubmit} disabled={!canSubmit} style={{ width: "100%", padding: "18px", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "16px", letterSpacing: "0.5px", background: canSubmit ? "linear-gradient(135deg, #6366f1, #a855f7)" : "rgba(255,255,255,0.03)", color: canSubmit ? "#fff" : "rgba(255,255,255,0.12)", border: "none", borderRadius: "10px", cursor: canSubmit ? "pointer" : "not-allowed", transition: "all 0.3s ease", boxShadow: canSubmit ? "0 4px 24px rgba(99,102,241,0.25)" : "none", }}>
-          {submitting ? "Submitting..." : size ? `Submit Order \u2014 $${discountedPrice}` : "Select a size to continue"}
+
+        <button onClick={handleSubmit} disabled={!canSubmit} style={{ width: "100%", padding: "18px", fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "16px", background: canSubmit ? RED : "rgba(255,255,255,0.04)", color: canSubmit ? "#fff" : "rgba(255,255,255,0.15)", border: "none", borderRadius: "10px", cursor: canSubmit ? "pointer" : "not-allowed" }}>
+          {submitting ? "Submitting..." : size ? `Submit Order — $${discountedPrice}` : "Select a size to continue"}
         </button>
       </div>
     </section>
   );
 }
 
-/* Collection Owners CTA */
-function CollectionCTA() {
+/* ---------- About ---------- */
+function About() {
   return (
-    <section style={{ padding: "80px 20px", position: "relative", background: "linear-gradient(180deg, #08080c, #0c0818, #08080c)", }}>
-      <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center", background: "rgba(99,102,241,0.03)", border: "1px solid rgba(99,102,241,0.1)", borderRadius: "20px", padding: "56px 32px", }}>
-        <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "26px", color: "#fff", marginBottom: "12px", }}>Run an NFT Project?</h3>
-        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, maxWidth: "480px", margin: "0 auto 28px", }}>
-          Partner with us to offer your holders physical 3D printed collectibles. Bulk pricing, custom finishes, and white-label options available. Add real-world utility to your collection.
-        </p>
-        <a href="mailto:elliot@nft23d.com" style={{ display: "inline-block", fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: "14px", padding: "14px 32px", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.25)", color: "#a5b4fc", borderRadius: "8px", textDecoration: "none", transition: "all 0.3s ease", }}>Get In Touch</a>
-      </div>
-    </section>
+    <div style={{ maxWidth: "760px", margin: "0 auto", padding: "112px 24px 90px" }}>
+      <h2 style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(38px,6vw,60px)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "30px" }}>About Sloan Craft</h2>
+      {["Sloan Craft started the way most of my projects do — I got obsessed with something and couldn't stop.",
+        "I'm Elliot Sloan. Most people know me as a vert and mega ramp skater — 16 X Games medals, seven of them gold, and a backyard park in Vista called the Sloanyard where I've hosted everything from the X Games to local sessions. But off the board, I've always been a builder. When I got my first 3D printer, that itch found a new outlet.",
+        "I started designing and printing the ramps that shaped skateboarding — scaled-down, hand-painted replicas you can actually hold. My own setup. The famous ones. The ones that mean something if you grew up watching this sport. Alongside those, I do custom collectible sculptures, including hand-painted pieces commissioned one at a time.",
+        "Everything here is made by me, by hand, in California. It's a small operation on purpose. You're not buying off a shelf in a warehouse — you're getting something a skater designed, printed, and painted because he genuinely thinks it's cool. If that sounds like your kind of thing, take a look around."
+      ].map((p, i) => <p key={i} style={{ color: DIM, fontSize: "17px", lineHeight: 1.8, marginBottom: "22px" }}>{p}</p>)}
+      <p style={{ fontFamily: "'Anton', sans-serif", fontSize: "22px", color: CREAM, letterSpacing: "1px" }}>— Elliot</p>
+    </div>
   );
 }
 
-/* Footer */
+/* ---------- Footer ---------- */
 function Footer() {
   return (
-    <footer style={{ padding: "40px 20px 32px", background: "#06060a", borderTop: "1px solid rgba(255,255,255,0.03)", textAlign: "center", }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "12px" }}>
-        <div style={{ width: "22px", height: "22px", borderRadius: "5px", background: "linear-gradient(135deg, #6366f1, #a855f7)", display: "flex", alignItems: "center", justifyContent: "center", }}>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: "9px", color: "#fff", fontWeight: 700 }}>3D</span>
-        </div>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "14px", color: "rgba(255,255,255,0.3)", }}>NFT<span style={{ color: "rgba(168,85,247,0.5)" }}>2</span>3D</span>
-      </div>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "rgba(255,255,255,0.12)", marginBottom: "6px", }}>Turning digital art into physical collectibles</div>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(255,255,255,0.08)", }}>Built by @elliotsloan</div>
-      <div style={{ marginTop: "16px", display: "flex", gap: "16px", justifyContent: "center" }}>
-        {["PayPal", "Venmo", "XRP", "ETH"].map(m => (
-          <span key={m} style={{ fontFamily: "'DM Mono', monospace", fontSize: "9px", color: "rgba(255,255,255,0.1)", letterSpacing: "1.5px", textTransform: "uppercase", }}>{m}</span>
-        ))}
-      </div>
+    <footer style={{ padding: "44px 20px 40px", background: "#100e0c", borderTop: `1px solid ${LINE}`, textAlign: "center" }}>
+      <img src="/images/sloancraft_logo_transparent.svg" alt="Sloan Craft" style={{ height: "30px", width: "auto", opacity: 0.9 }} />
+      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: MUTE, marginTop: "10px" }}>3D prints by Elliot Sloan · Vista, California</div>
+      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "rgba(242,242,242,0.25)", marginTop: "12px", letterSpacing: "1px" }}>@elliotsloan · info@sloancraft.com</div>
     </footer>
   );
 }
 
-/* Main App */
-export default function NFT23D() {
-  const [galleryOpen, setGalleryOpen] = useState(false);
-  const [applyModalOpen, setApplyModalOpen] = useState(false);
-  const scrollToOrder = () => { document.getElementById("order")?.scrollIntoView({ behavior: "smooth" }); };
+/* ---------- Lightbox ---------- */
+function Lightbox({ src, onClose }) {
+  if (!src) return null;
   return (
-    <div style={{ background: "#08080c", color: "#fff", minHeight: "100vh" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #08080c; }
-        ::selection { background: rgba(99,102,241,0.3); color: #fff; }
-        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.15); }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #08080c; }
-        ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); border-radius: 3px; }
-        @media (max-width: 768px) { div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; } }
-      `}</style>
-      <GrainOverlay />
-      <Nav onOrderClick={scrollToOrder} />
-      <Hero onOrderClick={scrollToOrder} onPhotoClick={(idx) => setGalleryOpen(idx)} />
-      <FeaturedCollections onPhotoClick={(idx) => setGalleryOpen(idx)} onApplyClick={() => setApplyModalOpen(true)} />
-      <HowItWorks />
-      <Pricing onOrder={scrollToOrder} />
-      <OrderForm />
-      <CollectionCTA />
-      <Footer />
-      {galleryOpen !== false && <PhotoGallery startIndex={galleryOpen} onClose={() => setGalleryOpen(false)} />}
-      {applyModalOpen && <CollectionApplyModal onClose={() => setApplyModalOpen(false)} />}
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.92)", display: "flex", alignItems: "center", justifyContent: "center", padding: "30px", cursor: "zoom-out" }}>
+      <span style={{ position: "absolute", top: "18px", right: "26px", color: "#fff", fontSize: "34px", cursor: "pointer" }}>×</span>
+      <img src={src} alt="" style={{ maxWidth: "92%", maxHeight: "92%", borderRadius: "10px", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }} />
     </div>
   );
 }
+
+/* ---------- App ---------- */
+export default function SloanCraft() {
+  const [route, setRoute] = useState("home");
+  const [param, setParam] = useState(null);
+  const [orderCtx, setOrderCtx] = useState(null);
+  const [zoom, setZoom] = useState(null);
+
+  const go = (name, p = null) => { setRoute(name); setParam(p); if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "instant" }); };
+  const startOrder = (product) => { setOrderCtx(product); go("order"); };
+
+  const CUSTOM_PRODUCT = { name: "Custom Piece", mode: "custom", sizes: CUSTOM_SIZES, initialSize: null };
+
+  return (
+    <div style={{ background: INK, color: CREAM, minHeight: "100vh" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: ${INK}; }
+        html { scroll-behavior: smooth; }
+        ::selection { background: rgba(224,27,27,0.35); color: #fff; }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.18); }
+        input:focus, textarea:focus, select:focus { border-color: rgba(224,27,27,0.5) !important; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: ${INK}; }
+        ::-webkit-scrollbar-thumb { background: rgba(224,27,27,0.3); border-radius: 3px; }
+        @media (max-width: 820px) { .nav-links { display: none !important; } .tagline-hide { display: none !important; } .two-col { grid-template-columns: 1fr !important; } }
+      `}</style>
+      <GrainOverlay />
+      <Nav go={go} route={route} />
+      {route === "home" && <Home go={go} />}
+      {route === "catalog" && <Catalog go={go} />}
+      {route === "product" && <Product slug={param} go={go} startOrder={startOrder} />}
+      {route === "gallery" && <GalleryView go={go} />}
+      {route === "collection" && <Collection id={param} go={go} onZoom={setZoom} />}
+      {route === "order" && orderCtx && <OrderForm product={orderCtx} go={go} />}
+      {route === "custom" && <OrderForm product={CUSTOM_PRODUCT} go={go} />}
+      {route === "about" && <About />}
+      <Footer />
+      <Lightbox src={zoom} onClose={() => setZoom(null)} />
+    </div>
+  );
+}
+
+/* ---------- style helpers ---------- */
+function btn(bg, color) { return { fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "15px", padding: "15px 30px", background: bg, color, border: "none", borderRadius: "8px", cursor: "pointer", transition: "transform .2s, background .2s" }; }
+function btnGhost() { return { fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "15px", padding: "15px 30px", background: "transparent", color: CREAM, border: `1px solid ${LINE}`, borderRadius: "8px", cursor: "pointer" }; }
+function eyebrow(center) { return { fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", color: MUTE, marginBottom: "12px", ...(center ? { display: "inline-block" } : {}) }; }
+function pageH() { return { fontFamily: "'Anton', sans-serif", fontSize: "clamp(38px,6vw,64px)", textTransform: "uppercase", letterSpacing: "1px" }; }
+function pathCard() { return { background: INK2, border: `1px solid ${LINE}`, borderRadius: "18px", padding: "38px 34px", cursor: "pointer", transition: "transform .25s, border-color .25s" }; }
+function pathH() { return { fontFamily: "'Anton', sans-serif", fontSize: "30px", letterSpacing: ".5px", textTransform: "uppercase", marginBottom: "14px" }; }
+function pathP() { return { color: DIM, lineHeight: 1.65, fontSize: "15.5px", marginBottom: "22px" }; }
+function card() { return { background: INK2, border: `1px solid ${LINE}`, borderRadius: "16px", overflow: "hidden", cursor: "pointer", transition: "transform .25s, border-color .25s" }; }
+function cardH() { return { fontFamily: "'Anton', sans-serif", fontSize: "21px", letterSpacing: ".5px", textTransform: "uppercase", marginBottom: "6px" }; }
+function thumb() { return { aspectRatio: "4/3", background: "#111", position: "relative", overflow: "hidden", borderBottom: `1px solid ${LINE}` }; }
+function imgCover() { return { width: "100%", height: "100%", objectFit: "cover", display: "block" }; }
+function fieldLabel() { return { fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", color: MUTE, display: "block", marginBottom: "9px" }; }
+function inputStyle() { return { width: "100%", padding: "13px 15px", background: INK, border: `1px solid ${LINE}`, borderRadius: "9px", color: CREAM, fontFamily: "'Archivo', sans-serif", fontSize: "15px", outline: "none", boxSizing: "border-box", transition: "border-color .2s" }; }
+function altPay(bg) { return { display: "block", padding: "14px 16px", background: bg, color: "#fff", borderRadius: "10px", textDecoration: "none", fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "14px", textAlign: "center" }; }
+function hoverLift(e) { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.borderColor = "rgba(224,27,27,0.4)"; }
+function unLift(e) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = LINE; }
+function cardHover(e) { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.borderColor = "rgba(224,27,27,0.45)"; }
+function cardUn(e) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = LINE; }
