@@ -99,9 +99,7 @@ export async function POST(request) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const replyTo = emailRegex.test(email) ? email : undefined;
 
-    // Send both emails in parallel.
-    // NOTE: send-from stays on the verified nft23d.com domain for deliverability.
-    // Switch these to @sloancraft.com only AFTER sloancraft.com is verified in Resend.
+    // Send both emails in parallel from the verified sloancraft.com domain (Resend).
     const emailPromises = [
       // Admin notification
       fetch("https://api.resend.com/emails", {
@@ -111,7 +109,7 @@ export async function POST(request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Sloan Craft Orders <orders@nft23d.com>",
+          from: "Sloan Craft Orders <orders@sloancraft.com>",
           to: "info@sloancraft.com",
           subject: `New Order ${orderId} - ${size} ($${price})`,
           ...(replyTo && { reply_to: replyTo }),
@@ -131,7 +129,7 @@ export async function POST(request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Sloan Craft <info@nft23d.com>",
+            from: "Sloan Craft <info@sloancraft.com>",
             to: email,
             reply_to: "info@sloancraft.com",
             subject: `Your Sloan Craft Order ${orderId} - Confirmed!`,
