@@ -51,8 +51,8 @@ const GALLERY = [
 
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-// Every gallery photo, for the hero slideshow
-const HERO_PHOTOS = shuffle(GALLERY.flatMap(g => g.photos));
+// One representative photo per print, for the hero slideshow (no repeats)
+const HERO_PHOTOS = shuffle(GALLERY.map(g => g.photos[0]));
 
 function HeroSlideshow() {
   const [i, setI] = useState(0);
