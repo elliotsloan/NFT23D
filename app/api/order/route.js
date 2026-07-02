@@ -112,7 +112,7 @@ export async function POST(request) {
         },
         body: JSON.stringify({
           from: "Sloan Craft Orders <orders@nft23d.com>",
-          to: "info@nft23d.com",
+          to: "info@sloancraft.com",
           subject: `New Order ${orderId} - ${size} ($${price})`,
           ...(replyTo && { reply_to: replyTo }),
           html: emailHtml,
@@ -133,6 +133,7 @@ export async function POST(request) {
           body: JSON.stringify({
             from: "Sloan Craft <info@nft23d.com>",
             to: email,
+            reply_to: "info@sloancraft.com",
             subject: `Your Sloan Craft Order ${orderId} - Confirmed!`,
             html: customerEmailHtml,
           }),
