@@ -51,6 +51,24 @@ const GALLERY = [
 
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
+// Every gallery photo, for the hero slideshow
+const HERO_PHOTOS = shuffle(GALLERY.flatMap(g => g.photos));
+
+function HeroSlideshow() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => setI(p => (p + 1) % HERO_PHOTOS.length), 2000);
+    return () => clearInterval(iv);
+  }, []);
+  return (
+    <div style={{ position: "relative", width: "100%", aspectRatio: "4/3", borderRadius: "18px", overflow: "hidden", border: `1px solid ${LINE}`, background: "#111", boxShadow: "0 20px 60px rgba(0,0,0,0.45)" }}>
+      {HERO_PHOTOS.map((p, idx) => (
+        <img key={idx} src={p} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: idx === i ? 1 : 0, transition: "opacity 0.9s ease" }} />
+      ))}
+    </div>
+  );
+}
+
 /* ---------- Small UI ---------- */
 function CheckIcon({ size = 48 }) {
   return (
@@ -100,18 +118,24 @@ function Home({ go }) {
     <div>
       <section style={{ padding: "132px 20px 72px", position: "relative", overflow: "hidden", background: `radial-gradient(1000px 520px at 78% -8%, rgba(224,27,27,0.18), transparent 60%), ${INK}` }}>
         <div style={{ maxWidth: "1120px", margin: "0 auto", position: "relative", zIndex: 1, opacity: v ? 1 : 0, transform: v ? "translateY(0)" : "translateY(30px)", transition: "all 1s cubic-bezier(0.16,1,0.3,1)" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", background: "rgba(224,27,27,0.08)", border: "1px solid rgba(224,27,27,0.3)", marginBottom: "26px" }}>
-            <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#37d67a", boxShadow: "0 0 8px #37d67a" }} />
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: RED, letterSpacing: "2px", textTransform: "uppercase" }}>Now taking orders · Vista, California</span>
-          </div>
-          <img src="/images/sloancraft_logo_transparent.svg" alt="Sloan Craft" style={{ width: "min(620px, 90%)", height: "auto", display: "block", margin: "0 0 6px -4px", filter: "drop-shadow(0 6px 30px rgba(224,27,27,0.25))" }} />
-          <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(18px,2.4vw,26px)", letterSpacing: "1px", color: RED, textTransform: "uppercase", margin: "12px 0 22px" }}>3D Prints by Elliot Sloan</div>
-          <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "clamp(15px,1.6vw,18px)", lineHeight: 1.65, color: DIM, maxWidth: "560px", marginBottom: "34px" }}>
-            Custom collectible sculptures and miniature replicas of the ramps that built skateboarding — designed, printed, and hand-painted in Vista, California.
-          </p>
-          <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-            <button onClick={() => go("catalog")} style={btn(RED, "#fff")}>Shop Prints</button>
-            <button onClick={() => go("custom")} style={btnGhost()}>Request a Custom Piece</button>
+          <div className="hero-grid" style={{ display: "grid", gridTemplateColumns: "1.05fr 0.95fr", gap: "44px", alignItems: "center" }}>
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", background: "rgba(224,27,27,0.08)", border: "1px solid rgba(224,27,27,0.3)", marginBottom: "26px" }}>
+                <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#37d67a", boxShadow: "0 0 8px #37d67a" }} />
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: RED, letterSpacing: "2px", textTransform: "uppercase" }}>Now taking orders · Vista, California</span>
+              </div>
+              <img src="/images/sloancraft_logo_transparent.svg" alt="Sloan Craft" style={{ width: "min(620px, 100%)", height: "auto", display: "block", margin: "0 0 6px -4px", filter: "drop-shadow(0 6px 30px rgba(224,27,27,0.25))" }} />
+              <div className="hero-slide-mobile"><HeroSlideshow /></div>
+              <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(18px,2.4vw,26px)", letterSpacing: "1px", color: RED, textTransform: "uppercase", margin: "12px 0 22px" }}>3D Prints by Elliot Sloan</div>
+              <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "clamp(15px,1.6vw,18px)", lineHeight: 1.65, color: DIM, maxWidth: "560px", marginBottom: "34px" }}>
+                Custom collectible sculptures and miniature replicas of the ramps that built skateboarding — designed, printed, and hand-painted in Vista, California.
+              </p>
+              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+                <button onClick={() => go("catalog")} style={btn(RED, "#fff")}>Shop Prints</button>
+                <button onClick={() => go("custom")} style={btnGhost()}>Request a Custom Piece</button>
+              </div>
+            </div>
+            <div className="hero-slide-desktop"><HeroSlideshow /></div>
           </div>
         </div>
       </section>
@@ -585,7 +609,8 @@ export default function SloanCraft() {
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: ${INK}; }
         ::-webkit-scrollbar-thumb { background: rgba(224,27,27,0.3); border-radius: 3px; }
-        @media (max-width: 820px) { .nav-links { display: none !important; } .tagline-hide { display: none !important; } .two-col { grid-template-columns: 1fr !important; } }
+        .hero-slide-mobile { display: none; }
+        @media (max-width: 820px) { .nav-links { display: none !important; } .tagline-hide { display: none !important; } .two-col { grid-template-columns: 1fr !important; } .hero-grid { grid-template-columns: 1fr !important; } .hero-slide-desktop { display: none !important; } .hero-slide-mobile { display: block !important; margin: 18px 0 6px; } }
       `}</style>
       <GrainOverlay />
       <Nav go={go} route={route} />
