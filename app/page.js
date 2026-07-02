@@ -253,7 +253,7 @@ function GalleryView({ go }) {
       <div style={{ padding: "0 0 8px" }}>
         <div style={eyebrow()}>Portfolio</div>
         <h2 style={pageH()}>Gallery</h2>
-        <p style={{ color: DIM, fontSize: "16px", lineHeight: 1.6, maxWidth: "620px", marginTop: "14px" }}>Past work and one-off custom builds — shown as capability samples, not catalog items.</p>
+        <p style={{ color: DIM, fontSize: "16px", lineHeight: 1.6, maxWidth: "620px", marginTop: "14px" }}>Past work and one-off custom builds — shown as capability samples, not catalog items (except for the ramps, which you can shop).</p>
       </div>
       <div style={{ background: "rgba(224,27,27,0.06)", border: "1px solid rgba(224,27,27,0.25)", borderRadius: "12px", padding: "16px 20px", margin: "8px 0 34px", fontSize: "14.5px", color: DIM, lineHeight: 1.6 }}>
         These pieces aren't for sale off the shelf. Want something like one of these? <b style={{ color: RED, cursor: "pointer" }} onClick={() => go("custom")}>Request a custom piece →</b>
