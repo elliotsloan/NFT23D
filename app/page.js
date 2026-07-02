@@ -333,7 +333,7 @@ function OrderForm({ product, go }) {
   }, []);
 
   const isInternational = form.country && form.country.trim() !== "" && !["us", "usa", "united states", "united states of america"].includes(form.country.trim().toLowerCase());
-  const intlFee = isInternational ? 35 : 0;
+  const shipping = isInternational ? 45 : 15;
   const canSubmit = form.name && form.email && size && (!isCustom || tos) && !submitting;
 
   const applyDiscount = async () => {
@@ -365,6 +365,8 @@ function OrderForm({ product, go }) {
       data.append("size", (isCustom ? "Custom " : product.name + " — ") + (size ? size.size + " " + size.label + " - $" + (discountedPrice || size.price) : ""));
       data.append("notes", form.notes || "None");
       data.append("paymentMethod", paymentMethod || "Not specified");
+      data.append("shipping", shipping);
+      data.append("total", (discountedPrice || size.price) + shipping);
       if (discountStatus === "valid") { data.append("discountCode", discountCode.trim().toUpperCase()); data.append("originalPrice", size.price); data.append("discountedPrice", discountedPrice); }
       const imageFile = fileRef.current?.files?.[0];
       if (imageFile) { data.append("image", imageFile); }
@@ -382,7 +384,7 @@ function OrderForm({ product, go }) {
   const handleStripeCheckout = async () => {
     setStripeLoading(true);
     try {
-      const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ size: size?.size, label: size?.label, price: size?.price, name: form.name, email: form.email, collection: isCustom ? "Custom piece" : product.name, discountCode: discountStatus === "valid" ? discountCode.trim().toUpperCase() : undefined }) });
+      const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ size: size?.size, label: size?.label, price: size?.price, shipping: shipping, name: form.name, email: form.email, collection: isCustom ? "Custom piece" : product.name, discountCode: discountStatus === "valid" ? discountCode.trim().toUpperCase() : undefined }) });
       const data = await res.json();
       if (data.url) { window.location.href = data.url; }
       else { alert("Something went wrong creating checkout. Please try PayPal or Venmo."); }
@@ -391,7 +393,7 @@ function OrderForm({ product, go }) {
   };
 
   if (submitted) {
-    const finalPrice = (discountedPrice || size?.price) + intlFee;
+    const finalPrice = (discountedPrice || size?.price) + shipping;
     const paypalUrl = `https://paypal.me/nft23d/${finalPrice}`;
     const venmoUrl = `https://venmo.com/elliotsloan?txn=pay&amount=${finalPrice}&note=${encodeURIComponent("Sloan Craft print - " + size?.size + " " + size?.label + (discountStatus === "valid" ? " (code: " + discountCode.toUpperCase() + ")" : "") + (submittedOrderId ? " [" + submittedOrderId + "]" : ""))}`;
     const XRP_ADDRESS = "rKydygGZZhmKteEZpEWtHACoTdWZ3c1Bep";
@@ -510,7 +512,9 @@ function OrderForm({ product, go }) {
         <div style={{ marginBottom: "20px" }}>
           <label style={fieldLabel()}>Country</label>
           <input type="text" placeholder="US" value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} style={inputStyle()} />
-          {isInternational && <p style={{ color: "#f59e0b", fontSize: "13px", marginTop: "6px" }}>International shipping: +$35.00 will be added to your total.</p>}
+          {isInternational
+            ? <p style={{ color: "#f59e0b", fontSize: "13px", marginTop: "6px" }}>International shipping: +$45.00 will be added to your total.</p>
+            : <p style={{ color: MUTE, fontSize: "13px", marginTop: "6px" }}>US shipping: +$15.00 will be added to your total.</p>}
         </div>
         <div style={{ marginBottom: "24px" }}>
           <label style={fieldLabel()}>{isCustom ? "What do you want made?" : "Special Requests (optional)"}</label>
@@ -540,7 +544,7 @@ function OrderForm({ product, go }) {
         </div>
 
         <button onClick={handleSubmit} disabled={!canSubmit} style={{ width: "100%", padding: "18px", fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "16px", background: canSubmit ? RED : "rgba(255,255,255,0.04)", color: canSubmit ? "#fff" : "rgba(255,255,255,0.15)", border: "none", borderRadius: "10px", cursor: canSubmit ? "pointer" : "not-allowed" }}>
-          {submitting ? "Submitting..." : size ? `Submit Order — $${discountedPrice}` : "Select a size to continue"}
+          {submitting ? "Submitting..." : size ? `Submit Order — $${discountedPrice + shipping}` : "Select a size to continue"}
         </button>
       </div>
     </section>

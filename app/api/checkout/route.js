@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { size, label, price, name, email, collection, discountCode } = await req.json();
+    const { size, label, price, shipping, name, email, collection, discountCode } = await req.json();
+    const shipAmount = Number.isFinite(shipping) ? shipping : 15;
 
     // Build checkout session params
     const params = {
@@ -22,6 +23,10 @@ export async function POST(req) {
       "shipping_address_collection[allowed_countries][1]": "CA",
       "shipping_address_collection[allowed_countries][2]": "GB",
       "shipping_address_collection[allowed_countries][3]": "AU",
+      "shipping_options[0][shipping_rate_data][type]": "fixed_amount",
+      "shipping_options[0][shipping_rate_data][fixed_amount][amount]": String(shipAmount * 100),
+      "shipping_options[0][shipping_rate_data][fixed_amount][currency]": "usd",
+      "shipping_options[0][shipping_rate_data][display_name]": "Shipping",
     };
 
     // Apply discount coupon if provided
