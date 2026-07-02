@@ -47,6 +47,10 @@ const GALLERY = [
   { id: "hawk", name: "Tony Hawk Skull", tag: "Custom sculpture", photos: ["/images/gal-hawk-skull-1.jpg", "/images/gal-hawk-skull-2.jpg", "/images/gal-hawk-skull-3.jpg", "/images/gal-hawk-skull-4.jpg", "/images/gal-hawk-skull-5.jpg"] },
   { id: "mcgill", name: "Mike McGill Skull", tag: "Custom sculpture", photos: ["/images/gal-mcgill-skull-1.jpg", "/images/gal-mcgill-skull-2.jpg", "/images/gal-mcgill-skull-3.jpg"] },
   { id: "cab", name: "Steve Cab Dragon", tag: "Custom sculpture", photos: ["/images/gal-cab-dragon-1.jpg", "/images/gal-cab-dragon-2.jpg", "/images/gal-cab-dragon-3.jpg", "/images/gal-cab-dragon-4.jpg"] },
+  { id: "g-animal-chin", name: "Animal Chin Ramp", tag: "Ramp Series", shop: "animal-chin", photos: ["/images/animal-chin.jpg", "/images/animal-chin-2.jpg", "/images/animal-chin-3.jpg"] },
+  { id: "g-monster-dc", name: "Monster x DC Ramp", tag: "Ramp Series", shop: "monster-dc", photos: ["/images/monster-dc.jpg", "/images/monster-dc-2.jpg", "/images/monster-dc-3.jpg"] },
+  { id: "g-mega-park", name: "Sloanyard Mega Park", tag: "Ramp Series", shop: "mega-park", photos: ["/images/mega-park.jpg", "/images/mega-park-2.jpg", "/images/mega-park-3.jpg"] },
+  { id: "g-vert-ramp", name: "Sloanyard Vert Ramp", tag: "Ramp Series", shop: "vert-ramp", photos: ["/images/vert-ramp.jpg", "/images/vert-ramp-2.jpg"] },
 ];
 
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -92,18 +96,18 @@ function Nav({ go, route }) {
       onMouseEnter={e => e.currentTarget.style.color = CREAM} onMouseLeave={e => e.currentTarget.style.color = route === name ? CREAM : DIM}>{label}</span>
   );
   return (
-    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "12px 24px", background: "rgba(11,11,11,0.9)", backdropFilter: "blur(14px)", borderBottom: `1px solid ${LINE}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
-      <div onClick={() => go("home")} style={{ display: "flex", alignItems: "center", gap: "13px", cursor: "pointer" }}>
+    <nav className="hdr" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "12px 24px", background: "rgba(11,11,11,0.9)", backdropFilter: "blur(14px)", borderBottom: `1px solid ${LINE}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
+      <div className="brand" onClick={() => go("home")} style={{ display: "flex", alignItems: "center", gap: "13px", cursor: "pointer" }}>
         <img src="/images/sloancraft_logo_transparent.svg" alt="Sloan Craft" style={{ height: "34px", width: "auto", display: "block" }} />
         <span className="tagline-hide" style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", letterSpacing: "1.5px", color: MUTE, textTransform: "uppercase", paddingLeft: "13px", borderLeft: `1px solid ${LINE}` }}>3D prints by Elliot Sloan</span>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+      <div className="nav-right" style={{ display: "flex", alignItems: "center", gap: "24px" }}>
         <div className="nav-links" style={{ display: "flex", gap: "22px", alignItems: "center" }}>
           {link("catalog", "Ramp Catalog")}
           {link("gallery", "Gallery")}
           {link("about", "About")}
         </div>
-        <button onClick={() => go("custom")} style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "13px", padding: "10px 18px", background: RED, color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", whiteSpace: "nowrap", transition: "background .2s" }}
+        <button className="nav-cta" onClick={() => go("custom")} style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 700, fontSize: "13px", padding: "10px 18px", background: RED, color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", whiteSpace: "nowrap", transition: "background .2s" }}
           onMouseEnter={e => e.currentTarget.style.background = RED2} onMouseLeave={e => e.currentTarget.style.background = RED}>Request a Custom Piece</button>
       </div>
     </nav>
@@ -281,7 +285,7 @@ function Collection({ id, go, onZoom }) {
       <div style={{ padding: "0 0 14px" }}>
         <span onClick={() => go("gallery")} style={{ fontFamily: "'DM Mono', monospace", color: MUTE, fontSize: "12px", cursor: "pointer" }}>← Back to Gallery</span>
         <h2 style={{ ...pageH(), marginTop: "14px" }}>{g.name}</h2>
-        <p style={{ fontFamily: "'DM Mono', monospace", color: RED, fontSize: "13px", letterSpacing: "1px", textTransform: "uppercase" }}>{g.tag} · sample of past work</p>
+        <p style={{ fontFamily: "'DM Mono', monospace", color: RED, fontSize: "13px", letterSpacing: "1px", textTransform: "uppercase" }}>{g.tag}{g.shop ? " · in the catalog" : " · sample of past work"}</p>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px,1fr))", gap: "16px" }}>
         {g.photos.map((p, i) => (
@@ -291,7 +295,9 @@ function Collection({ id, go, onZoom }) {
         ))}
       </div>
       <div style={{ background: "rgba(224,27,27,0.06)", border: "1px solid rgba(224,27,27,0.25)", borderRadius: "12px", padding: "16px 20px", margin: "34px 0 80px", textAlign: "center", color: DIM }}>
-        A sample of past work — not sold off the shelf. Want one like it? <b style={{ color: RED, cursor: "pointer" }} onClick={() => go("custom")}>Request a custom piece →</b>
+        {g.shop
+          ? <>This one's in the Ramp Catalog, ready to ship. <b style={{ color: RED, cursor: "pointer" }} onClick={() => go("product", g.shop)}>Shop this ramp →</b></>
+          : <>A sample of past work — not sold off the shelf. Want one like it? <b style={{ color: RED, cursor: "pointer" }} onClick={() => go("custom")}>Request a custom piece →</b></>}
       </div>
     </div>
   );
@@ -557,9 +563,9 @@ function About() {
     <div style={{ maxWidth: "760px", margin: "0 auto", padding: "112px 24px 90px" }}>
       <h2 style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(38px,6vw,60px)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "30px" }}>About Sloan Craft</h2>
       {["Sloan Craft started the way most of my projects do — I got obsessed with something and couldn't stop.",
-        "I'm Elliot Sloan. Most people know me as a vert and mega ramp skater — 16 X Games medals, seven of them gold, and a backyard park in Vista called the Sloanyard where I've hosted everything from the X Games to local sessions. But off the board, I've always been a builder. When I got my first 3D printer, that itch found a new outlet.",
-        "I started designing and printing the ramps that shaped skateboarding — scaled-down, hand-painted replicas you can actually hold. My own setup. The famous ones. The ones that mean something if you grew up watching this sport. Alongside those, I do custom collectible sculptures, including hand-painted pieces commissioned one at a time.",
-        "Everything here is made by me, by hand, in California. It's a small operation on purpose. You're not buying off a shelf in a warehouse — you're getting something a skater designed, printed, and painted because he genuinely thinks it's cool. If that sounds like your kind of thing, take a look around."
+        "I'm Elliot Sloan. Most people know me as a vert and mega ramp skater — 16-time X Games medalist, seven of them gold, and a backyard park in Vista called the Sloanyard where we hosted the 2022 and 2023 X Games. But off the board, I've always been a collector. When I got my first 3D printer, that itch found a new outlet.",
+        "I started designing and printing some of the most iconic ramps in vert skateboarding. Alongside those, I do custom collectible sculptures, including hand-painted pieces commissioned one at a time.",
+        "Everything here is made by me, by hand, in California. It's a small operation on purpose. You're not buying off a shelf in a warehouse — you're getting something I designed, printed, and painted because I genuinely think it's cool. If that sounds like your kind of thing, take a look around."
       ].map((p, i) => <p key={i} style={{ color: DIM, fontSize: "17px", lineHeight: 1.8, marginBottom: "22px" }}>{p}</p>)}
       <p style={{ fontFamily: "'Anton', sans-serif", fontSize: "22px", color: CREAM, letterSpacing: "1px" }}>— Elliot</p>
     </div>
@@ -614,7 +620,18 @@ export default function SloanCraft() {
         ::-webkit-scrollbar-track { background: ${INK}; }
         ::-webkit-scrollbar-thumb { background: rgba(224,27,27,0.3); border-radius: 3px; }
         .hero-slide-mobile { display: none; }
-        @media (max-width: 820px) { .nav-links { display: none !important; } .tagline-hide { display: none !important; } .two-col { grid-template-columns: 1fr !important; } .hero-grid { grid-template-columns: 1fr !important; } .hero-slide-desktop { display: none !important; } .hero-slide-mobile { display: block !important; margin: 18px 0 6px; } }
+        @media (max-width: 820px) {
+          .hdr { flex-wrap: wrap; justify-content: center; gap: 4px 14px; padding: 10px 14px; }
+          .brand { width: 100%; justify-content: center; }
+          .tagline-hide { display: none !important; }
+          .nav-right { gap: 0 !important; }
+          .nav-links { display: flex !important; gap: 20px; font-size: 13.5px; }
+          .nav-cta { display: none !important; }
+          .two-col { grid-template-columns: 1fr !important; }
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-slide-desktop { display: none !important; }
+          .hero-slide-mobile { display: block !important; margin: 18px 0 6px; }
+        }
       `}</style>
       <GrainOverlay />
       <Nav go={go} route={route} />
