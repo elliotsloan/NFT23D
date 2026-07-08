@@ -517,9 +517,9 @@ function OrderForm({ product, go }) {
         <div style={{ marginBottom: "20px" }}>
           <label style={fieldLabel()}>Country</label>
           <input type="text" placeholder="US" value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} style={inputStyle()} />
-          {isInternational
-            ? <p style={{ color: "#f59e0b", fontSize: "13px", marginTop: "6px" }}>International shipping: +$40.00 will be added to your total.</p>
-            : <p style={{ color: MUTE, fontSize: "13px", marginTop: "6px" }}>US shipping: +$15.00 will be added to your total.</p>}
+          <p style={{ color: MUTE, fontSize: "13px", marginTop: "6px" }}>
+            Shipping added to your total: <b style={{ color: !isInternational ? "#f59e0b" : MUTE }}>US +$15.00</b> · <b style={{ color: isInternational ? "#f59e0b" : MUTE }}>International +$40.00</b>
+          </p>
         </div>
         <div style={{ marginBottom: "24px" }}>
           <label style={fieldLabel()}>{isCustom ? "What do you want made?" : "Special Requests (optional)"}</label>
