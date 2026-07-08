@@ -339,7 +339,7 @@ function OrderForm({ product, go }) {
   }, []);
 
   const isInternational = form.country && form.country.trim() !== "" && !["us", "usa", "united states", "united states of america"].includes(form.country.trim().toLowerCase());
-  const shipping = isInternational ? 45 : 15;
+  const shipping = isInternational ? 40 : 15;
   const canSubmit = form.name && form.email && size && (!isCustom || tos) && !submitting;
 
   const applyDiscount = async () => {
@@ -518,7 +518,7 @@ function OrderForm({ product, go }) {
           <label style={fieldLabel()}>Country</label>
           <input type="text" placeholder="US" value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} style={inputStyle()} />
           {isInternational
-            ? <p style={{ color: "#f59e0b", fontSize: "13px", marginTop: "6px" }}>International shipping: +$45.00 will be added to your total.</p>
+            ? <p style={{ color: "#f59e0b", fontSize: "13px", marginTop: "6px" }}>International shipping: +$40.00 will be added to your total.</p>
             : <p style={{ color: MUTE, fontSize: "13px", marginTop: "6px" }}>US shipping: +$15.00 will be added to your total.</p>}
         </div>
         <div style={{ marginBottom: "24px" }}>
