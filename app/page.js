@@ -475,7 +475,6 @@ function OrderForm({ product, go }) {
           {!isCustom && <span onClick={() => go("product", null)} style={{ display: "inline-block", fontFamily: "'DM Mono', monospace", color: MUTE, fontSize: "12px", cursor: "pointer", marginBottom: "12px" }} />}
           <div style={eyebrow(true)}>{isCustom ? "One-off builds" : "Order"}</div>
           <h2 style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(30px,5vw,48px)", textTransform: "uppercase", letterSpacing: "1px", marginTop: "8px" }}>{isCustom ? "Request a Custom Piece" : product.name}</h2>
-          {isCustom && <p style={{ color: DIM, fontSize: "14px", marginTop: "12px", lineHeight: 1.6 }}>Send a reference and a few details. I'll review it and email you a quote before anything is charged.</p>}
         </div>
 
         {isCustom && (
