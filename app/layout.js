@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/next';
+
 export const metadata = {
   metadataBase: new URL('https://sloancraft.com'),
   title: 'Sloan Craft — 3D Prints by Elliot Sloan',
@@ -22,7 +24,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0 }}>{children}</body>
+      <body style={{ margin: 0, padding: 0 }}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   )
 }
